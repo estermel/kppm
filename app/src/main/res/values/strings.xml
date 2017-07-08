@@ -1,0 +1,37 @@
+<resources>
+    <string name="app_name">KPPM 2017 Palembang</string>
+    <string name="title_activity_register">Daftar KPPM 2017</string>
+    <string name="full_name">Nama Lengkap</string>
+    <string name="jabatan">Jabatan</string>
+    <string name="umur">Umur</string>
+    <string name="no_ktp">Nomor KTP</string>
+    <string name="bersama_istri">Datang Bersama Istri</string>
+    <string name="ya">Ya</string>
+    <string name="tidak">Tidak</string>
+    <string name="alamat">Alamat</string>
+    <string name="no_telepon">Nomor Telepon Aktif</string>
+    <string name="tgl_keberangkatan">Tanggal Keberangkatan</string>
+    <string name="provinsi">Provinsi</string>
+    <string name="kabupaten_kota">Kabupaten/Kota</string>
+    <string name="bandara_hotel">Transportasi Bandara - Hotel diurus Panitia?</string>
+    <string name="waktuBerangkat">Waktu berangkat</string>
+    <string name="waktuPulang">Waktu pulang</string>
+    <string name="keterangan">Keterangan</string>
+    <string name="hotel_acara">Transportasi Hotel - Tempat Acara diurus Panitia?</string>
+    <string name="jenis_transport">Jenis Transportasi</string>
+    <string name="hotel">Menginap di Hotel</string>
+    <string name="nama_hotel">Nama hotel</string>
+    <string name="tipe_kamar">Tipe kamar</string>
+    <string name="bed">Kasur</string>
+    <string name="konsumsi">Konsumsi selama acara</string>
+    <string name="konsumsiD1">Selasa malam</string>
+    <string name="konsumsiD2"><![CDATA[Rabu siang & malam]]></string>
+    <string name="konsumsiD3"><![CDATA[Kamis siang & malam]]></string>
+    <string name="total_harga">Total harga (akomodasi + transportasi + konsumi)</string>
+    <string name="isi_alamat">Tulis alamat</string>
+    <string name="akomodasi">Akomodasi</string>
+    <string name="nama_istri">Nama Istri</string>
+    <string name="org_gereja">Dari Gereja/Organisasi (Tuliskan)</string>
+    <string name="org">Organisasi/Gereja</string>
+    <string name="daftar">Daftar</string>
+</resources>
