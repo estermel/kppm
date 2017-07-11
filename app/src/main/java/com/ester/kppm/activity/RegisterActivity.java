@@ -1,4 +1,4 @@
-package com.ester.kppm;
+package com.ester.kppm.activity;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
 
+import com.ester.kppm.R;
 import com.ester.kppm.fragment.RegisterFragment;
 
 import butterknife.BindView;
@@ -31,6 +32,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.cv_pu) void goToRegistrationFragment(){
+
         fragmentManager.beginTransaction()
                 .replace(R.id.frameContainer, new RegisterFragment())
                 .addToBackStack(null).commit();
