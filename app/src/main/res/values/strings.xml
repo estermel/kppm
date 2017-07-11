@@ -34,4 +34,18 @@
     <string name="org_gereja">Dari Gereja/Organisasi (Tuliskan)</string>
     <string name="org">Organisasi/Gereja</string>
     <string name="daftar">Daftar</string>
+    <string name="tgl_kepulangan">Tanggal Kepulangan</string>
+    <string name="fullname_required">Isi nama lengkap Anda</string>
+    <string name="jabatan_required">Pilih jabatan Anda</string>
+    <string name="org_gereja_required">Isi asal Organisasi/Gereja Anda</string>
+    <string name="ktp_required">Isi Nomor KTP Anda</string>
+    <string name="nohp_required">Isi Nomor HP Anda</string>
+    <string name="umur_required">Isi Umur Anda</string>
+    <string name="provinsi_required">Isi asal Provinsi Anda</string>
+    <string name="kabupaten_kota_required">Isi asal Kabupaten/Kota Anda</string>
+    <string name="alamat_required">Isi Alamat Anda</string>
+    <string name="jam_keberangkatan">Jam Keberangkatan</string>
+    <string name="jam_kepulangan">Jam Kepulangan</string>
+    <string name="waktu_keberangkatan">Waktu Keberangkatan</string>
+    <string name="waktu_kepulangan">Waktu Kepulangan</string>
 </resources>

@@ -1,9 +1,11 @@
-package com.ester.kppm;
+package com.ester.kppm.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
+
+import com.ester.kppm.R;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

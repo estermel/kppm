@@ -29,9 +29,9 @@ public class BandaraHotel {
     @JsonProperty("jenis")
     private String jenis;
     @JsonProperty("waktudatang")
-    private Date waktudatang;
+    private String waktudatang;
     @JsonProperty("waktupulang")
-    private Date waktupulang;
+    private String waktupulang;
     @JsonProperty("keterangan")
     private String keterangan;
     @JsonIgnore
@@ -58,22 +58,22 @@ public class BandaraHotel {
     }
 
     @JsonProperty("waktudatang")
-    public Date getWaktudatang() {
+    public String getWaktudatang() {
         return waktudatang;
     }
 
     @JsonProperty("waktudatang")
-    public void setWaktudatang(Date waktudatang) {
+    public void setWaktudatang(String waktudatang) {
         this.waktudatang = waktudatang;
     }
 
     @JsonProperty("waktupulang")
-    public Date getWaktupulang() {
+    public String getWaktupulang() {
         return waktupulang;
     }
 
     @JsonProperty("waktupulang")
-    public void setWaktupulang(Date waktupulang) {
+    public void setWaktupulang(String waktupulang) {
         this.waktupulang = waktupulang;
     }
 
