@@ -15,20 +15,34 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
+        "id",
         "namahotel",
         "tipekamar",
-        "response"
+        "status",
+        "info"
 })
 public class HotelModel {
 
+    @JsonProperty("id")
+    private int id;
     @JsonProperty("namahotel")
     private String namahotel;
     @JsonProperty("tipekamar")
     private List<TipeKamar> tipekamar = null;
-    @JsonProperty("response")
-    private Response response;
+    @JsonProperty("status")
+    private String status;
+    @JsonProperty("info")
+    private String info;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     @JsonProperty("namahotel")
     public String getNamahotel() {
@@ -50,14 +64,20 @@ public class HotelModel {
         this.tipekamar = tipekamar;
     }
 
-    @JsonProperty("response")
-    public Response getResponse() {
-        return response;
+    public String getStatus() {
+        return status;
     }
 
-    @JsonProperty("response")
-    public void setResponse(Response response) {
-        this.response = response;
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getInfo() {
+        return info;
+    }
+
+    public void setInfo(String info) {
+        this.info = info;
     }
 
     @JsonAnyGetter

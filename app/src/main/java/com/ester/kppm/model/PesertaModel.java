@@ -15,8 +15,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-        "username",
-        "password",
         "role",
         "nama",
         "jabatan",
@@ -36,15 +34,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         "kasur",
         "konsumsi1",
         "konsumsi2",
-        "konsumsi3",
-        "totalharga"
+        "totalharga",
+        "status",
+        "info" // return kodepeserta
 })
-public class RegistrasiModel {
+public class PesertaModel {
 
-    @JsonProperty("username")
-    private String username;
-    @JsonProperty("password")
-    private String password;
     @JsonProperty("role")
     private String role;
     @JsonProperty("nama")
@@ -83,32 +78,14 @@ public class RegistrasiModel {
     private boolean konsumsi1;
     @JsonProperty("konsumsi2")
     private boolean konsumsi2;
-    @JsonProperty("konsumsi3")
-    private boolean konsumsi3;
     @JsonProperty("totalharga")
     private float totalharga;
+    @JsonProperty("status")
+    private String status;
+    @JsonProperty("info")
+    private String info;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
-
-    @JsonProperty("username")
-    public String getUsername() {
-        return username;
-    }
-
-    @JsonProperty("username")
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    @JsonProperty("password")
-    public String getPassword() {
-        return password;
-    }
-
-    @JsonProperty("password")
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
     @JsonProperty("role")
     public String getRole() {
@@ -300,16 +277,6 @@ public class RegistrasiModel {
         this.konsumsi2 = konsumsi2;
     }
 
-    @JsonProperty("konsumsi3")
-    public boolean getKonsumsi3() {
-        return konsumsi3;
-    }
-
-    @JsonProperty("konsumsi3")
-    public void setKonsumsi3(boolean konsumsi3) {
-        this.konsumsi3 = konsumsi3;
-    }
-
     @JsonProperty("totalharga")
     public float getTotalharga() {
         return totalharga;
@@ -318,6 +285,34 @@ public class RegistrasiModel {
     @JsonProperty("totalharga")
     public void setTotalharga(float totalharga) {
         this.totalharga = totalharga;
+    }
+
+    public boolean isDenganistri() {
+        return denganistri;
+    }
+
+    public boolean isKonsumsi1() {
+        return konsumsi1;
+    }
+
+    public boolean isKonsumsi2() {
+        return konsumsi2;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getInfo() {
+        return info;
+    }
+
+    public void setInfo(String info) {
+        this.info = info;
     }
 
     @JsonAnyGetter

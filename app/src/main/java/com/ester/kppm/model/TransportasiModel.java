@@ -18,7 +18,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         "trip",
         "jenis",
         "harga",
-        "response"
+        "status",
+        "info"
 })
 public class TransportasiModel {
 
@@ -28,8 +29,8 @@ public class TransportasiModel {
     private String jenis;
     @JsonProperty("harga")
     private float harga;
-    @JsonProperty("response")
-    private Response response;
+    private String status;
+    private String info;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -63,14 +64,20 @@ public class TransportasiModel {
         this.harga = harga;
     }
 
-    @JsonProperty("response")
-    public Response getResponse() {
-        return response;
+    public String getStatus() {
+        return status;
     }
 
-    @JsonProperty("response")
-    public void setResponse(Response response) {
-        this.response = response;
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getInfo() {
+        return info;
+    }
+
+    public void setInfo(String info) {
+        this.info = info;
     }
 
     @JsonAnyGetter

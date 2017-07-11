@@ -15,29 +15,32 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-        "period",
+        "id",
+        "jenis",
         "harga",
-        "response"
+        "status",
+        "info"
 })
 public class KonsumsiModel {
 
-    @JsonProperty("period")
-    private int period;
+    private int id;
+    @JsonProperty("jenis")
+    private int jenis;
     @JsonProperty("harga")
     private float harga;
-    @JsonProperty("response")
-    private Response response;
+    private String status;
+    private String info;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("period")
-    public int getPeriod() {
-        return period;
+    @JsonProperty("jenis")
+    public int getJenis() {
+        return jenis;
     }
 
-    @JsonProperty("period")
-    public void setPeriod(int period) {
-        this.period = period;
+    @JsonProperty("jenis")
+    public void setJenis(int jenis) {
+        this.jenis = jenis;
     }
 
     @JsonProperty("harga")
@@ -50,14 +53,28 @@ public class KonsumsiModel {
         this.harga = harga;
     }
 
-    @JsonProperty("response")
-    public Response getResponse() {
-        return response;
+    public int getId() {
+        return id;
     }
 
-    @JsonProperty("response")
-    public void setResponse(Response response) {
-        this.response = response;
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getInfo() {
+        return info;
+    }
+
+    public void setInfo(String info) {
+        this.info = info;
     }
 
     @JsonAnyGetter

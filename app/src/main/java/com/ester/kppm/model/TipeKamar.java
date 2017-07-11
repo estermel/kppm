@@ -14,23 +14,36 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
+        "id",
         "nama",
-        "single",
-        "double",
-        "ekstrabed"
+        "harga"
 })
 public class TipeKamar {
 
+    @JsonProperty("id")
+    private int id;
     @JsonProperty("nama")
     private String nama;
-    @JsonProperty("single")
-    private float single;
-    @JsonProperty("double")
-    private float _double;
-    @JsonProperty("ekstrabed")
-    private float ekstrabed;
+    @JsonProperty("harga")
+    private float harga;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public float getHarga() {
+        return harga;
+    }
+
+    public void setHarga(float harga) {
+        this.harga = harga;
+    }
 
     @JsonProperty("nama")
     public String getNama() {
@@ -40,36 +53,6 @@ public class TipeKamar {
     @JsonProperty("nama")
     public void setNama(String nama) {
         this.nama = nama;
-    }
-
-    @JsonProperty("single")
-    public float getSingle() {
-        return single;
-    }
-
-    @JsonProperty("single")
-    public void setSingle(float single) {
-        this.single = single;
-    }
-
-    @JsonProperty("double")
-    public float getDouble() {
-        return _double;
-    }
-
-    @JsonProperty("double")
-    public void setDouble(float _double) {
-        this._double = _double;
-    }
-
-    @JsonProperty("ekstrabed")
-    public float getEkstrabed() {
-        return ekstrabed;
-    }
-
-    @JsonProperty("ekstrabed")
-    public void setEkstrabed(float ekstrabed) {
-        this.ekstrabed = ekstrabed;
     }
 
     @JsonAnyGetter

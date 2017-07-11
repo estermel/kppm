@@ -19,7 +19,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         "password",
         "ktp",
         "nohp",
-        "response"
+        "status",
+        "info"
 })
 public class PanitiaModel {
 
@@ -33,8 +34,8 @@ public class PanitiaModel {
     private String ktp;
     @JsonProperty("nohp")
     private String nohp;
-    @JsonProperty("response")
-    private Response response;
+    private String status;
+    private String info;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -88,14 +89,20 @@ public class PanitiaModel {
         this.nohp = nohp;
     }
 
-    @JsonProperty("response")
-    public Response getResponse() {
-        return response;
+    public String getStatus() {
+        return status;
     }
 
-    @JsonProperty("response")
-    public void setResponse(Response response) {
-        this.response = response;
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getInfo() {
+        return info;
+    }
+
+    public void setInfo(String info) {
+        this.info = info;
     }
 
     @JsonAnyGetter

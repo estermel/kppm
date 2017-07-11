@@ -20,6 +20,7 @@ public class RegisterActivity extends AppCompatActivity {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     FragmentManager fragmentManager;
+    String role = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,23 +32,22 @@ public class RegisterActivity extends AppCompatActivity {
         fragmentManager = getSupportFragmentManager();
     }
 
-    @OnClick(R.id.cv_pu) void goToRegistrationFragment(){
-
+    @OnClick(R.id.cv_pu) void goToRegistrationPuForm(){
+        role = "umum";
         fragmentManager.beginTransaction()
                 .replace(R.id.frameContainer, new RegisterFragment())
                 .addToBackStack(null).commit();
     }
 
-    @OnClick(R.id.cv_pk) void goToRegistrationFrom(){
+    @OnClick(R.id.cv_pk) void goToRegistrationPkForm(){
+        role = "khusus";
         fragmentManager.beginTransaction()
                 .replace(R.id.frameContainer, new RegisterFragment())
                 .addToBackStack(null).commit();
     }
 
-    @OnClick(R.id.cv_pg) void goToRegistrationF(){
-        fragmentManager.beginTransaction()
-                .replace(R.id.frameContainer, new RegisterFragment())
-                .addToBackStack(null).commit();
+    public String prepareRole() {
+        return role;
     }
 
 }

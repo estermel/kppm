@@ -25,8 +25,8 @@ public class UserModel {
     private String username;
     @JsonProperty("password")
     private String password;
-    @JsonProperty("response")
-    private Response response;
+    private String status;
+    private String info;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -50,14 +50,20 @@ public class UserModel {
         this.password = password;
     }
 
-    @JsonProperty("response")
-    public Response getResponse() {
-        return response;
+    public String getStatus() {
+        return status;
     }
 
-    @JsonProperty("response")
-    public void setResponse(Response response) {
-        this.response = response;
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getInfo() {
+        return info;
+    }
+
+    public void setInfo(String info) {
+        this.info = info;
     }
 
     @JsonAnyGetter

@@ -118,64 +118,74 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp">
+
                 <EditText
                     android:id="@+id/et_no_ktp"
-                    android:hint="@string/no_ktp"
-                    android:textColorHint="@color/fade"
-                    android:textColorHighlight="@color/colorPrimary"
-                    android:background="@android:color/transparent"
-                    android:textColor="@color/colorPrimary"
-                    android:defaultFocusHighlightEnabled="true"
-                    android:padding="10dp"
-                    android:inputType="number"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:defaultFocusHighlightEnabled="true"
+                    android:hint="@string/no_ktp"
+                    android:inputType="number"
+                    android:padding="10dp"
+                    android:textColor="@color/colorPrimary"
+                    android:textColorHighlight="@color/colorPrimary"
+                    android:textColorHint="@color/fade" />
             </android.support.v7.widget.CardView>
 
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp">
+
                 <LinearLayout
-                    android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="5dp">
+
                     <TextView
+                        android:id="@+id/tv_bersama_istri"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/tv_bersama_istri"
-                        android:text="@string/bersama_istri"
                         android:padding="10dp"
-                        android:textColor="@color/fade"/>
-                    <LinearLayout
-                        android:orientation="horizontal"
+                        android:text="@string/bersama_istri"
+                        android:textColor="@color/fade" />
+
+                    <RadioGroup
+                        android:id="@+id/rg_istri"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
-                        <RadioButton
-                            android:layout_width="0dp"
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight=".5"
-                            android:id="@+id/rb_bersama_istri"
-                            android:text="@string/ya"/>
-                        <RadioButton
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight=".5"
-                            android:id="@+id/rb_tidak_bersama_istri"
-                            android:text="@string/tidak"/>
-                    </LinearLayout>
+                            android:orientation="horizontal">
+                            <RadioButton
+                                android:id="@+id/rb_bersama_istri"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight=".5"
+                                android:text="@string/ya" />
+                            <RadioButton
+                                android:id="@+id/rb_tidak_bersama_istri"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight=".5"
+                                android:text="@string/tidak" />
+                        </LinearLayout>
+                    </RadioGroup>
+
                     <EditText
                         android:id="@+id/et_nama_istri"
-                        android:hint="@string/nama_istri"
-                        android:textColorHint="@color/fade"
-                        android:textColorHighlight="@color/colorPrimary"
-                        android:textColor="@color/colorPrimary"
-                        android:defaultFocusHighlightEnabled="true"
-                        android:background="@android:color/transparent"
-                        android:padding="10dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:visibility="gone"/>
+                        android:background="@android:color/transparent"
+                        android:defaultFocusHighlightEnabled="true"
+                        android:hint="@string/nama_istri"
+                        android:padding="10dp"
+                        android:textColor="@color/colorPrimary"
+                        android:textColorHighlight="@color/colorPrimary"
+                        android:textColorHint="@color/fade" />
                 </LinearLayout>
             </android.support.v7.widget.CardView>
 
@@ -191,45 +201,52 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp">
+
                 <LinearLayout
-                    android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="5dp">
+
                     <EditText
                         android:id="@+id/et_alamat"
-                        android:hint="@string/isi_alamat"
-                        android:padding="10dp"
-                        android:textColorHint="@color/fade"
-                        android:textColorHighlight="@color/colorPrimary"
-                        android:textColor="@color/colorPrimary"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:background="@android:color/transparent"
                         android:defaultFocusHighlightEnabled="true"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:hint="@string/isi_alamat"
+                        android:padding="10dp"
+                        android:textColor="@color/colorPrimary"
+                        android:textColorHighlight="@color/colorPrimary"
+                        android:textColorHint="@color/fade" />
 
                     <LinearLayout
-                        android:layout_margin="5dp"
-                        android:orientation="horizontal"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:orientation="horizontal">
+
                         <EditText
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight=".5"
-                            android:textColor="@color/colorPrimary"
                             android:id="@+id/et_provinsi"
-                            android:hint="@string/provinsi"
-                            android:textColorHighlight="@color/colorPrimary"
-                            android:textColorHint="@color/fade"/>
-                        <EditText
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginRight="5dp"
                             android:layout_weight=".5"
+                            android:hint="@string/provinsi"
                             android:textColor="@color/colorPrimary"
-                            android:id="@+id/et_kabupaten_kota"
-                            android:hint="@string/kabupaten_kota"
                             android:textColorHighlight="@color/colorPrimary"
-                            android:textColorHint="@color/fade"/>
+                            android:textColorHint="@color/fade" />
+
+                        <EditText
+                            android:id="@+id/et_kabupaten_kota"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:layout_weight=".5"
+                            android:hint="@string/kabupaten_kota"
+                            android:textColor="@color/colorPrimary"
+                            android:textColorHighlight="@color/colorPrimary"
+                            android:textColorHint="@color/fade" />
                     </LinearLayout>
                 </LinearLayout>
             </android.support.v7.widget.CardView>
@@ -281,23 +298,29 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="10dp"
-                        android:layout_marginRight="8dp">
+                        android:layout_marginRight="7dp">
+
                         <LinearLayout
-                            android:orientation="vertical"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="5dp">
+
                             <TextView
                                 android:id="@+id/v_tgl_keberangkatan"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:padding="10dp"
+                                android:textSize="15sp"
                                 android:text="@string/tgl_keberangkatan"
                                 android:textColor="@color/colorPrimary" />
+
                             <TextView
                                 android:id="@+id/v_jam_keberangkatan"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:padding="10dp"
+                                android:textSize="15sp"
                                 android:text="@string/jam_keberangkatan"
                                 android:textColor="@color/colorPrimary" />
                         </LinearLayout>
@@ -322,22 +345,28 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="10dp"
                         android:layout_marginLeft="8dp">
+
                         <LinearLayout
-                            android:orientation="vertical"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="5dp">
+
                             <TextView
                                 android:id="@+id/v_tgl_kepulangan"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:padding="10dp"
+                                android:textSize="15sp"
                                 android:text="@string/tgl_kepulangan"
                                 android:textColor="@color/colorPrimary" />
+
                             <TextView
                                 android:id="@+id/v_jam_kepulangan"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:padding="10dp"
+                                android:textSize="15sp"
                                 android:text="@string/jam_kepulangan"
                                 android:textColor="@color/colorPrimary" />
                         </LinearLayout>
@@ -349,75 +378,53 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp">
+
                 <LinearLayout
-                    android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="5dp">
+
                     <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
                         android:id="@+id/tv_bandara_hotel"
-                        android:text="@string/bandara_hotel"
-                        android:padding="10dp"
-                        android:textColor="@color/fade"/>
-                    <LinearLayout
-                        android:orientation="horizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                        <RadioButton
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight=".5"
-                            android:text="@string/ya"
-                            android:id="@+id/rb_diurusPanitia_bandara_hotel"/>
-                        <RadioButton
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight=".5"
-                            android:text="@string/tidak"
-                            android:id="@+id/rb_tidakDiurusPanitia_bandara_hotel"/>
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                        <EditText
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight=".5"
-                            android:textColorHint="@color/fade"
-                            android:textColorHighlight="@color/colorPrimary"
-                            android:defaultFocusHighlightEnabled="true"
-                            android:background="@android:color/transparent"
-                            android:hint="@string/waktuBerangkat"
-                            android:id="@+id/et_bandara_hotel_waktuBerangkat"
-                            android:layout_margin="5dp"
-                            android:visibility="gone"/>
-                        <EditText
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight=".5"
-                            android:textColorHint="@color/fade"
-                            android:textColorHighlight="@color/colorPrimary"
-                            android:defaultFocusHighlightEnabled="true"
-                            android:background="@android:color/transparent"
-                            android:hint="@string/waktuPulang"
-                            android:id="@+id/et_bandara_hotel_waktuPulang"
-                            android:layout_margin="5dp"
-                            android:visibility="gone"/>
-                    </LinearLayout>
-                    <EditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColorHint="@color/fade"
-                        android:textColorHighlight="@color/colorPrimary"
-                        android:defaultFocusHighlightEnabled="true"
-                        android:background="@android:color/transparent"
-                        android:hint="@string/keterangan"
+                        android:padding="10dp"
+                        android:text="@string/bandara_hotel"
+                        android:textColor="@color/fade" />
+                    <RadioGroup
+                        android:id="@+id/rg_bandara_hotel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+                            <RadioButton
+                                android:id="@+id/rb_diurusPanitia_bandara_hotel"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight=".5"
+                                android:text="@string/ya" />
+                            <RadioButton
+                                android:id="@+id/rb_tidakDiurusPanitia_bandara_hotel"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight=".5"
+                                android:text="@string/tidak" />
+                        </LinearLayout>
+                    </RadioGroup>
+
+                    <EditText
                         android:id="@+id/et_keterangan_bandara_hotel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_margin="5dp"
-                        android:visibility="gone"/>
+                        android:background="@android:color/transparent"
+                        android:defaultFocusHighlightEnabled="true"
+                        android:hint="@string/keterangan"
+                        android:textColorHighlight="@color/colorPrimary"
+                        android:textColorHint="@color/fade" />
                 </LinearLayout>
             </android.support.v7.widget.CardView>
 
@@ -425,55 +432,63 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp">
+
                 <LinearLayout
-                    android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="5dp">
+
                     <TextView
+                        android:id="@+id/tv_hotel_acara"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/tv_hotel_acara"
-                        android:text="@string/hotel_acara"
                         android:padding="10dp"
-                        android:textColor="@color/fade"/>
-                    <LinearLayout
-                        android:orientation="horizontal"
+                        android:text="@string/hotel_acara"
+                        android:textColor="@color/fade" />
+
+                    <RadioGroup
+                        android:id="@+id/rg_hotel_acara"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
-                        <RadioButton
-                            android:layout_width="0dp"
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight=".5"
-                            android:text="@string/ya"
-                            android:id="@+id/rb_diurusPanitia_hotel_acara"/>
-                        <RadioButton
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight=".5"
-                            android:text="@string/tidak"
-                            android:id="@+id/rb_tidakDiurusPanitia_hotel_acara"/>
-                    </LinearLayout>
+                            android:orientation="horizontal">
+                            <RadioButton
+                                android:id="@+id/rb_diurusPanitia_hotel_acara"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight=".5"
+                                android:text="@string/ya" />
+                            <RadioButton
+                                android:id="@+id/rb_tidakDiurusPanitia_hotel_acara"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight=".5"
+                                android:text="@string/tidak" />
+                        </LinearLayout>
+                    </RadioGroup>
+
                     <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
                         android:id="@+id/spinner_jenis_transport"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/jenis_transport"
                         android:layout_margin="5dp"
+                        android:hint="@string/jenis_transport"
                         android:textColorHint="@color/fade"
-                        app:met_floatingLabel="normal"
-                        android:visibility="gone"/>
+                        app:met_floatingLabel="normal" />
 
                     <EditText
+                        android:id="@+id/et_keterangan_hotel_acara"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColorHint="@color/fade"
-                        android:textColorHighlight="@color/colorPrimary"
-                        android:defaultFocusHighlightEnabled="true"
-                        android:background="@android:color/transparent"
-                        android:hint="@string/keterangan"
-                        android:id="@+id/et_keterangan_hotel_acara"
                         android:layout_margin="5dp"
-                        android:visibility="gone"/>
+                        android:background="@android:color/transparent"
+                        android:defaultFocusHighlightEnabled="true"
+                        android:hint="@string/keterangan"
+                        android:textColorHighlight="@color/colorPrimary"
+                        android:textColorHint="@color/fade" />
                 </LinearLayout>
             </android.support.v7.widget.CardView>
 
@@ -541,28 +556,30 @@
                         android:text="@string/konsumsi"
                         android:padding="10dp"
                         android:textColor="@color/fade"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:textSize="10sp"
+                        android:text="@string/ket_konsumsi_harga"/>
                     <LinearLayout
                         android:orientation="horizontal"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:padding="5dp">
                         <CheckBox
-                            android:id="@+id/cb_konsumsiD1"
+                            android:id="@+id/cb_konsumsi1"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight=".3"
-                            android:text="@string/konsumsiD1"/>
-                        <CheckBox
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight=".3"
-                            android:id="@+id/cb_konsumsiD2"
-                            android:text="@string/konsumsiD2"/>
+                            android:text="@string/konsumsi1"/>
                         <CheckBox
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight=".3"
-                            android:id="@+id/cb_konsumsiD3"
-                            android:text="@string/konsumsiD3"/>
+                            android:id="@+id/cb_konsumsi2"
+                            android:text="@string/konsumsi2"/>
                     </LinearLayout>
                 </LinearLayout>
             </android.support.v7.widget.CardView>
@@ -588,10 +605,8 @@
                         android:id="@+id/v_total_harga"
                         android:text="@string/total_harga"
                         android:padding="10dp"
-                        android:textSize="30sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/fade"
-                        android:visibility="gone"/>
+                        android:textSize="20sp"
+                        android:textColor="@color/fade"/>
                 </LinearLayout>
             </android.support.v7.widget.CardView>
         </LinearLayout>

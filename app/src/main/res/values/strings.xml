@@ -24,9 +24,8 @@
     <string name="tipe_kamar">Tipe kamar</string>
     <string name="bed">Kasur</string>
     <string name="konsumsi">Konsumsi selama acara</string>
-    <string name="konsumsiD1">Selasa malam</string>
-    <string name="konsumsiD2"><![CDATA[Rabu siang & malam]]></string>
-    <string name="konsumsiD3"><![CDATA[Kamis siang & malam]]></string>
+    <string name="konsumsi1">Makan siang dan malam selama acara</string>
+    <string name="konsumsi2">Snack (makanan ringan)</string>
     <string name="total_harga">Total harga (akomodasi + transportasi + konsumi)</string>
     <string name="isi_alamat">Tulis alamat</string>
     <string name="akomodasi">Akomodasi</string>
@@ -48,4 +47,9 @@
     <string name="jam_kepulangan">Jam Kepulangan</string>
     <string name="waktu_keberangkatan">Waktu Keberangkatan</string>
     <string name="waktu_kepulangan">Waktu Kepulangan</string>
+    <string name="jam_keberangkatan_required">Isi Jam Keberangkatan Anda</string>
+    <string name="jam_kepulangan_required">Isi Jam Kepulangan Anda</string>
+    <string name="tgl_keberangkatan_required">Isi Tanggal Keberangkatan Anda</string>
+    <string name="tgl_kepulangan_required">Isi Tanggal Kepulangan Anda</string>
+    <string name="ket_konsumsi_harga">*Makanan Rp 125.000 | Snack Rp 20.000</string>
 </resources>

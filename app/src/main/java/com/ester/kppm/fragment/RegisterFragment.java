@@ -3,6 +3,7 @@ package com.ester.kppm.fragment;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
@@ -17,13 +18,16 @@ import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.ester.kppm.R;
 import com.ester.kppm.RestApi;
+import com.ester.kppm.activity.RegisterActivity;
 import com.ester.kppm.model.BandaraHotel;
-import com.ester.kppm.model.RegistrasiModel;
+import com.ester.kppm.model.PesertaModel;
 import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
 
 import java.text.SimpleDateFormat;
@@ -100,12 +104,10 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
     RadioButton rb_diurusPanitia_bandara_hotel;
     @BindView(R.id.rb_tidakDiurusPanitia_bandara_hotel)
     RadioButton rb_tidakDiurusPanitia_bandara_hotel;
-    @BindView(R.id.et_bandara_hotel_waktuBerangkat)
-    EditText et_bandara_hotel_waktuBerangkat;
-    @BindView(R.id.et_bandara_hotel_waktuPulang)
-    EditText et_bandara_hotel_waktuPulang;
     @BindView(R.id.et_keterangan_bandara_hotel)
     EditText et_keterangan_bandara_hotel;
+    @BindView(R.id.rg_istri)
+    RadioGroup rg_istri;
     @BindView(R.id.rb_diurusPanitia_hotel_acara)
     RadioButton rb_diurusPanitia_hotel_acara;
     @BindView(R.id.rb_tidakDiurusPanitia_hotel_acara)
@@ -120,12 +122,10 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
     MaterialBetterSpinner spinner_tipe_kamar;
     @BindView(R.id.spinner_bed)
     MaterialBetterSpinner spinner_bed;
-    @BindView(R.id.cb_konsumsiD1)
-    CheckBox cb_konsumsiD1;
-    @BindView(R.id.cb_konsumsiD2)
-    CheckBox cb_konsumsiD2;
-    @BindView(R.id.cb_konsumsiD3)
-    CheckBox cb_konsumsiD3;
+    @BindView(R.id.cb_konsumsi1)
+    CheckBox cb_konsumsi1;
+    @BindView(R.id.cb_konsumsi2)
+    CheckBox cb_konsumsi2;
     @BindView(R.id.v_total_harga)
     TextView v_total_harga;
     @BindView(R.id.btn_register)
@@ -140,8 +140,9 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
     boolean denganistri=false, isDiurusHotelAcara=false, isDiurusBandaraHotel=false, isKonsumsi1=false, isKonsumsi2=false,
             isKonsumsi3=false;
     float totalHarga;
-    RegistrasiModel registrasiModel;
+    PesertaModel pesertaModel;
     BandaraHotel bandaraHotel;
+    private String status, info;
 
     public RegisterFragment(){
 
@@ -166,20 +167,39 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
         spinner_jabatan.setAdapter(jabatanAdapter);
 
 //        Istri
-        if (rb_bersama_istri.isSelected()){
+        et_nama_istri.setVisibility(View.INVISIBLE);
+        rg_istri.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
+                if (i == R.id.rb_bersama_istri){
+                    denganistri = true;
+                    et_nama_istri.setVisibility(View.VISIBLE);
+                } if (i == R.id.rb_tidak_bersama_istri){
+                    denganistri = false;
+                }
+            }
+        });
+
+        et_nama_istri.setVisibility(View.INVISIBLE);
+        int selected_rg_istri = rg_istri.getCheckedRadioButtonId();
+        if(selected_rg_istri == rb_bersama_istri.getId()){
             denganistri = true;
             et_nama_istri.setVisibility(View.VISIBLE);
+        } if(selected_rg_istri == rb_tidak_bersama_istri.getId()){
+            et_nama_istri.setVisibility(View.INVISIBLE);
         }
 
+
 //        Transportasi Bandara - Hotel
+        et_keterangan_bandara_hotel.setVisibility(View.INVISIBLE);
         if(rb_diurusPanitia_bandara_hotel.isSelected()){
             isDiurusBandaraHotel = true;
-            et_bandara_hotel_waktuBerangkat.setVisibility(View.VISIBLE);
-            et_bandara_hotel_waktuPulang.setVisibility(View.VISIBLE);
             et_keterangan_bandara_hotel.setVisibility(View.VISIBLE);
         }
 
 //        Transportasi Hotel - Acara
+        spinner_jenis_transport.setVisibility(View.INVISIBLE);
+        et_keterangan_hotel_acara.setVisibility(View.INVISIBLE);
         if(rb_diurusPanitia_hotel_acara.isSelected()){
             isDiurusHotelAcara = true;
             spinner_jenis_transport.setVisibility(View.VISIBLE);
@@ -187,12 +207,10 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
         }
 
 //        Konsumsi
-        if(cb_konsumsiD1.isChecked()){
+        if(cb_konsumsi1.isChecked()){
             isKonsumsi1 = true;
-        } if(cb_konsumsiD2.isChecked()){
+        } if(cb_konsumsi2.isChecked()){
             isKonsumsi2 = true;
-        } if(cb_konsumsiD3.isChecked()){
-            isKonsumsi3 = true;
         }
     }
 
@@ -239,7 +257,6 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
     @OnClick(R.id.v_jam_keberangkatan) void showTimePickerBerangkat(){
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int minute = calendar.get(Calendar.MINUTE);
-
         TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker timePicker, int i, int i1) {
@@ -275,35 +292,42 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
     @OnClick(R.id.btn_register) void register(){
         validateData();
         getAllData();
-        registrasiModel = new RegistrasiModel();
+        pesertaModel = new PesertaModel();
         bandaraHotel = new BandaraHotel();
         bandaraHotel.setWaktudatang(waktudatang);
         bandaraHotel.setWaktupulang(waktupulang);
-        registrasiModel.setNama(nama);
-        registrasiModel.setRole(role);
-        registrasiModel.setGerejaorg(gerejaorg);
-        registrasiModel.setJabatan(jabatan);
-        registrasiModel.setKtp(ktp);
-        registrasiModel.setNohp(nohp);
-        registrasiModel.setUmur(umur);
-        registrasiModel.setProvinsi(provinsi);
-        registrasiModel.setKota(kota);
-        registrasiModel.setAlamat(alamat);
-        registrasiModel.setNamaistri(namaistri);
-        registrasiModel.setDenganistri(denganistri);
-        registrasiModel.setHotel(hotel);
-        registrasiModel.setBandaraHotel(bandaraHotel);
+        pesertaModel.setNama(nama);
+        pesertaModel.setRole(role);
+        pesertaModel.setGerejaorg(gerejaorg);
+        pesertaModel.setJabatan(jabatan);
+        pesertaModel.setKtp(ktp);
+        pesertaModel.setNohp(nohp);
+        pesertaModel.setUmur(umur);
+        pesertaModel.setProvinsi(provinsi);
+        pesertaModel.setKota(kota);
+        pesertaModel.setAlamat(alamat);
+        pesertaModel.setNamaistri(namaistri);
+        pesertaModel.setDenganistri(denganistri);
+        pesertaModel.setHotel(hotel);
+        pesertaModel.setBandaraHotel(bandaraHotel);
         RestApi restApi = RestApi.retrofit.create(RestApi.class);
-        Call<RegistrasiModel> call = restApi.register(registrasiModel);
-        call.enqueue(new Callback<RegistrasiModel>() {
+        Call<PesertaModel> call = restApi.register(pesertaModel);
+        call.enqueue(new Callback<PesertaModel>() {
             @Override
-            public void onResponse(Call<RegistrasiModel> call, Response<RegistrasiModel> response) {
-
+            public void onResponse(Call<PesertaModel> call, Response<PesertaModel> response) {
+                pesertaModel = response.body();
+                status = pesertaModel.getStatus();
+                info = pesertaModel.getInfo();
+                if(status=="202"){
+                    Toast.makeText(getContext(), "Kode Peserta Anda adalah " + info, Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getContext(), "Maaf, gagal mendaftar ke sistem", Toast.LENGTH_LONG).show();
+                }
             }
 
             @Override
-            public void onFailure(Call<RegistrasiModel> call, Throwable t) {
-
+            public void onFailure(Call<PesertaModel> call, Throwable t) {
+                Toast.makeText(getContext(), "Silakan periksa koneksi Internt Anda", Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -327,17 +351,25 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
             et_kabupaten_kota.setError(getString(R.string.kabupaten_kota_required));
         } if(TextUtils.isEmpty(alamat)){
             et_alamat.setError(getString(R.string.alamat_required));
+        } if(v_jam_keberangkatan.equals("Jam Keberangkatan")){
+            v_jam_keberangkatan.setError(getString(R.string.jam_keberangkatan_required));
+        } if (v_jam_kepulangan.equals("Jam Kepulangan")){
+            v_jam_kepulangan.setError(getString(R.string.jam_kepulangan_required));
+        } if(v_tgl_keberangkatan.equals("Tanggal Keberangkatan")){
+            v_tgl_keberangkatan.setError(getString(R.string.tgl_keberangkatan_required));
+        } if(v_tgl_kepulangan.equals("Tanggal Kepulangan")){
+            v_tgl_kepulangan.setError(getString(R.string.tgl_kepulangan_required));
         }
     }
 
     private void getAllData() {
+        setRole();
         nama = et_fullname.getText().toString();
-        role = "";
         jabatan = spinner_jabatan.getText().toString();
         gerejaorg = et_org_gereja.getText().toString();
         ktp = et_no_ktp.getText().toString();
         nohp = et_no_telepon.getText().toString();
-//        umur = Integer.parseInt(et_umur.getText().toString());
+        umur = Integer.parseInt(et_umur.getText().toString());
         provinsi = et_provinsi.getText().toString();
         kota = et_kabupaten_kota.getText().toString();
         alamat = et_alamat.getText().toString();
@@ -367,10 +399,15 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
         Log.d("Register", "keteranganHotelAcara: " + keteranganHotelAcara);
         Log.d("Register", "isKonsumsi1: " + isKonsumsi1);
         Log.d("Register", "isKonsumsi2: " + isKonsumsi2);
-        Log.d("Register", "isKonsumsi3: " + isKonsumsi3);
         Log.d("Register", "denganistri: " + denganistri);
         Log.d("Register", "isDiurusBandaraHotel: " + isDiurusBandaraHotel);
         Log.d("Register", "isDiurusHotelAcara: " + isDiurusHotelAcara);
         Log.d("Register", "totalHarga: " + totalHarga);
+    }
+
+    private void setRole() {
+        RegisterActivity activity = (RegisterActivity) getActivity();
+        role = activity.prepareRole();
+        Log.d("Register", "role: "+ role);
     }
 }
