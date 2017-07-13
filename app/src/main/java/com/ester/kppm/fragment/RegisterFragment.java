@@ -3,6 +3,7 @@ package com.ester.kppm.fragment;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -27,11 +28,14 @@ import com.ester.kppm.R;
 import com.ester.kppm.RestApi;
 import com.ester.kppm.activity.RegisterActivity;
 import com.ester.kppm.model.BandaraHotel;
+import com.ester.kppm.model.HotelResponse;
 import com.ester.kppm.model.PesertaModel;
 import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 import butterknife.BindView;
@@ -132,16 +136,19 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
     Button btn_register;
     Calendar calendar;
     String[] JABATAN = {"Pendeta", "Pendeta Muda", "Pendeta Pembantu", "Evangelist"};
+    List<String> HOTEL = new ArrayList<>();
+    List<String> TIPEKAMAR = new ArrayList<>();
+    String[] KASUR = {"Single bed", "Double bed"};
     String nama, password, role, jabatan, gerejaorg, ktp, nohp,
             namaistri, provinsi, kota, alamat, tgl_keberangkatan, tgl_kepulangan,
             waktudatang, waktupulang, keteranganBandaraHotel, jenisTransportBandaraHotel,
             jenisTransportHotelAcara, keteranganHotelAcara, hotel, tipeKamar;
-    int umur, kasur;
-    boolean denganistri=false, isDiurusHotelAcara=false, isDiurusBandaraHotel=false, isKonsumsi1=false, isKonsumsi2=false,
-            isKonsumsi3=false;
+    int umur, kasur, idhotel;
+    boolean denganistri, isDiurusHotelAcara, isDiurusBandaraHotel, isKonsumsi1, isKonsumsi2;
     float totalHarga;
     PesertaModel pesertaModel;
     BandaraHotel bandaraHotel;
+    HotelResponse hotelList;
     private String status, info;
 
     public RegisterFragment(){
@@ -160,11 +167,26 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
         ButterKnife.bind(this, view);
         fragmentManager = getActivity().getSupportFragmentManager();
         calendar = Calendar.getInstance();
+        loadHotel();
 
 //        Jabatan
         ArrayAdapter<String> jabatanAdapter = new ArrayAdapter<String>(getContext(),
                 android.R.layout.simple_dropdown_item_1line, JABATAN);
         spinner_jabatan.setAdapter(jabatanAdapter);
+
+//        Hotel
+        ArrayAdapter<String> hotelAdapter = new ArrayAdapter<String>(getContext(),
+                android.R.layout.simple_dropdown_item_1line, HOTEL);
+        spinner_hotel.setAdapter(hotelAdapter);
+
+//        Tipe Kamar
+        ArrayAdapter<String> tipeKamarAdapter = new ArrayAdapter<String>(getContext(),
+                android.R.layout.simple_dropdown_item_1line, TIPEKAMAR);
+        spinner_tipe_kamar.setAdapter(tipeKamarAdapter);
+
+//        Kasur
+        ArrayAdapter<String> bedAdapter = new ArrayAdapter<String>(getContext(),
+                android.R.layout.simple_dropdown_item_1line, KASUR);
 
 //        Istri
         et_nama_istri.setVisibility(View.INVISIBLE);
@@ -188,7 +210,6 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
         } if(selected_rg_istri == rb_tidak_bersama_istri.getId()){
             et_nama_istri.setVisibility(View.INVISIBLE);
         }
-
 
 //        Transportasi Bandara - Hotel
         et_keterangan_bandara_hotel.setVisibility(View.INVISIBLE);
@@ -332,6 +353,74 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
         });
     }
 
+    public void loadHotel(){
+        hotelList = new HotelResponse();
+        RestApi restApi = RestApi.retrofit.create(RestApi.class);
+        Call<HotelResponse> call = restApi.getAllHotel();
+        call.enqueue(new Callback<HotelResponse>() {
+            @Override
+            public void onResponse(Call<HotelResponse> call, Response<HotelResponse> response) {
+                hotelList = response.body();
+                int hotelSize = hotelList.getHotelModels().size();
+                for(int i=0; i < hotelSize; i++){
+                    String hotelName = hotelList.getHotelModels().get(i).getNamahotel();
+                    final int hotelId = hotelList.getHotelModels().get(i).getId();
+                    Log.d("hotelName", "["+ i + "]" + hotelName);
+                    HOTEL.add(hotelName);
+
+                    spinner_hotel.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+                        public void onItemSelected(AdapterView<?> arg0, View view, int position, long id) {
+                            String pos = spinner_hotel.get(position);
+                        }
+                        public void onNothingSelected(AdapterView<?> arg0) { }
+                    });
+
+                    spinner_hotel.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            idhotel = hotelId;
+                            getHotelById();
+                        }
+                    });
+
+
+                    int kamarSize = hotelList.getHotelModels().get(i).getTipekamar().size();
+                    for(int j=i; j < kamarSize ; j++){
+                        String tipeKamar = hotelList.getHotelModels().get(i).getTipekamar().get(j).getNama();
+                        Log.d("tipeKamar", "[" + j + "]" + tipeKamar);
+                        TIPEKAMAR.add(tipeKamar);
+                    }
+                    Log.d("kamarSize", String.valueOf(kamarSize));
+                }
+                Log.d("hotelSize", String.valueOf(hotelSize));
+            }
+
+            @Override
+            public void onFailure(Call<HotelResponse> call, Throwable t) {
+                Log.d("loadHotel onFailure", t.getLocalizedMessage());
+                Log.d("loadHotel onFailure", t.getStackTrace().toString());
+            }
+        });
+
+    }
+
+    private void getHotelById() {
+        RestApi restApi = RestApi.retrofit.create(RestApi.class);
+        Call<HotelResponse> call = restApi.getHotelById(idhotel);
+        call.enqueue(new Callback<HotelResponse>() {
+            @Override
+            public void onResponse(Call<HotelResponse> call, Response<HotelResponse> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<HotelResponse> call, Throwable t) {
+
+            }
+        });
+    }
+
     private void validateData() {
         if(TextUtils.isEmpty(nama)){
             et_fullname.setError(getString(R.string.fullname_required));
@@ -343,8 +432,6 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
             et_no_ktp.setError(getString(R.string.ktp_required));
         } if(TextUtils.isEmpty(nohp)){
             et_no_telepon.setError(getString(R.string.nohp_required));
-        } if(TextUtils.isEmpty(String.valueOf(umur))){
-            et_umur.setError(getString(R.string.umur_required));
         } if(TextUtils.isEmpty(provinsi)){
             et_provinsi.setError(getString(R.string.provinsi_required));
         } if(TextUtils.isEmpty(kota)){
@@ -369,7 +456,7 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
         gerejaorg = et_org_gereja.getText().toString();
         ktp = et_no_ktp.getText().toString();
         nohp = et_no_telepon.getText().toString();
-        umur = Integer.parseInt(et_umur.getText().toString());
+//        umur = Integer.parseInt(et_umur.getText().toString());
         provinsi = et_provinsi.getText().toString();
         kota = et_kabupaten_kota.getText().toString();
         alamat = et_alamat.getText().toString();
@@ -379,10 +466,10 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
         keteranganBandaraHotel = et_keterangan_bandara_hotel.getText().toString();
         jenisTransportHotelAcara = spinner_jenis_transport.getText().toString();
         keteranganHotelAcara = et_keterangan_hotel_acara.getText().toString();
+        hotel = spinner_hotel.getText().toString();
         totalHarga = 1000000;
 
         Log.d("Register", "nama: " + nama);
-        Log.d("Register", "role: " + role);
         Log.d("Register", "jabatan: " + jabatan);
         Log.d("Register", "gerejaorg: " + gerejaorg);
         Log.d("Register", "ktp: " + ktp);
@@ -402,6 +489,7 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
         Log.d("Register", "denganistri: " + denganistri);
         Log.d("Register", "isDiurusBandaraHotel: " + isDiurusBandaraHotel);
         Log.d("Register", "isDiurusHotelAcara: " + isDiurusHotelAcara);
+        Log.d("Register", "hotel: " + hotel);
         Log.d("Register", "totalHarga: " + totalHarga);
     }
 

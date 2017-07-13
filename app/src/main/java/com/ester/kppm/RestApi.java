@@ -1,6 +1,7 @@
 package com.ester.kppm;
 
 import com.ester.kppm.model.HotelModel;
+import com.ester.kppm.model.HotelResponse;
 import com.ester.kppm.model.KonsumsiModel;
 import com.ester.kppm.model.PanitiaModel;
 import com.ester.kppm.model.PesertaModel;
@@ -8,6 +9,7 @@ import com.ester.kppm.model.TipeKamar;
 import com.ester.kppm.model.TransportasiModel;
 import com.ester.kppm.model.UserModel;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -53,6 +55,12 @@ public interface RestApi {
 
     @POST("editTransportasi")
     Call<TransportasiModel> editTransportasi(@Body TransportasiModel transportasiModel);
+
+    @GET("getAllHotel")
+    Call<HotelResponse> getAllHotel();
+
+    @GET("getHotelById")
+    Call<HotelResponse> getHotelById(@Field("id") int id);
 
     @POST("login")
     Call<UserModel> login(@Body UserModel userModel);
