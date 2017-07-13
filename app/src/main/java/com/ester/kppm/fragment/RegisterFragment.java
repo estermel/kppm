@@ -184,6 +184,7 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
                 android.R.layout.simple_dropdown_item_1line, TIPEKAMAR);
         spinner_tipe_kamar.setAdapter(tipeKamarAdapter);
 
+
 //        Kasur
         ArrayAdapter<String> bedAdapter = new ArrayAdapter<String>(getContext(),
                 android.R.layout.simple_dropdown_item_1line, KASUR);
@@ -365,34 +366,23 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
                 for(int i=0; i < hotelSize; i++){
                     String hotelName = hotelList.getHotelModels().get(i).getNamahotel();
                     final int hotelId = hotelList.getHotelModels().get(i).getId();
-                    Log.d("hotelName", "["+ i + "]" + hotelName);
                     HOTEL.add(hotelName);
-
-                    spinner_hotel.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-
-                        public void onItemSelected(AdapterView<?> arg0, View view, int position, long id) {
-                            String pos = spinner_hotel.get(position);
-                        }
-                        public void onNothingSelected(AdapterView<?> arg0) { }
-                    });
-
-                    spinner_hotel.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            idhotel = hotelId;
-                            getHotelById();
-                        }
-                    });
-
-
                     int kamarSize = hotelList.getHotelModels().get(i).getTipekamar().size();
-                    for(int j=i; j < kamarSize ; j++){
+                    Log.d("hotel", "index["+ i + "] = " + hotelName + " | kamarSize = " + String.valueOf(kamarSize));
+                    for(int j=0; j < kamarSize ; j++){
                         String tipeKamar = hotelList.getHotelModels().get(i).getTipekamar().get(j).getNama();
-                        Log.d("tipeKamar", "[" + j + "]" + tipeKamar);
+                        Log.d("tipeKamar", "ke[" + j + "] = " + tipeKamar);
                         TIPEKAMAR.add(tipeKamar);
                     }
-                    Log.d("kamarSize", String.valueOf(kamarSize));
                 }
+                spinner_hotel.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+                    public void onItemSelected(AdapterView<?> arg0, View view, int position, long id) {
+                        idhotel = arg0.getSelectedItemPosition();
+                        Log.d("idhotel", String.valueOf(idhotel));
+                    }
+                    public void onNothingSelected(AdapterView<?> arg0) { }
+                });
                 Log.d("hotelSize", String.valueOf(hotelSize));
             }
 
