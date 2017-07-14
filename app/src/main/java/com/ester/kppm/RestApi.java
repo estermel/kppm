@@ -7,9 +7,9 @@ import com.ester.kppm.model.PanitiaModel;
 import com.ester.kppm.model.PesertaModel;
 import com.ester.kppm.model.TipeKamar;
 import com.ester.kppm.model.TransportasiModel;
+import com.ester.kppm.model.TransportasiResponse;
 import com.ester.kppm.model.UserModel;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -58,6 +58,9 @@ public interface RestApi {
 
     @GET("getAllHotel")
     Call<HotelResponse> getAllHotel();
+
+    @GET("getAllTransport")
+    Call<TransportasiResponse> getAllTransportasi();
 
     @GET("getHotelById")
     Call<HotelResponse> getHotelById(@Field("id") int id);
