@@ -3,7 +3,6 @@ package com.ester.kppm.fragment;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
-import android.provider.CalendarContract;
 import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -20,7 +19,6 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -30,9 +28,10 @@ import com.ester.kppm.RestApi;
 import com.ester.kppm.activity.RegisterActivity;
 import com.ester.kppm.model.BandaraHotel;
 import com.ester.kppm.model.HotelAcara;
+import com.ester.kppm.model.HotelModel;
 import com.ester.kppm.model.HotelResponse;
 import com.ester.kppm.model.PesertaModel;
-import com.ester.kppm.model.TransportasiModel;
+import com.ester.kppm.model.TipeKamarResponse;
 import com.ester.kppm.model.TransportasiResponse;
 import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
 
@@ -48,11 +47,6 @@ import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-
-/**
- * Created by mel on 7/8/17.
- */
 
 public class RegisterFragment extends Fragment implements AdapterView.OnItemSelectedListener{
 
@@ -114,6 +108,8 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
     RadioButton rb_diurusPanitia_bandara_hotel;
     @BindView(R.id.rb_tidakDiurusPanitia_bandara_hotel)
     RadioButton rb_tidakDiurusPanitia_bandara_hotel;
+    @BindView(R.id.spinner_jenis_transport_bandara_hotel)
+    MaterialBetterSpinner spinner_jenis_transport_bandara_hotel;
     @BindView(R.id.et_keterangan_bandara_hotel)
     EditText et_keterangan_bandara_hotel;
     @BindView(R.id.rg_istri)
@@ -124,7 +120,7 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
     RadioButton rb_diurusPanitia_hotel_acara;
     @BindView(R.id.rb_tidakDiurusPanitia_hotel_acara)
     RadioButton rb_tidakDiurusPanitia_hotel_acara;
-    @BindView(R.id.spinner_jenis_transport)
+    @BindView(R.id.spinner_jenis_transport_hotel_acara)
     MaterialBetterSpinner spinner_jenis_transport;
     @BindView(R.id.et_keterangan_hotel_acara)
     EditText et_keterangan_hotel_acara;
@@ -147,20 +143,21 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
     List<String> HOTEL = new ArrayList<>();
     List<String> TIPEKAMAR = new ArrayList<>();
     String[] KASUR = {"Single bed", "Double bed"};
-    List<String> TRANSPORTASI = new ArrayList<>();
-    String nama, password, role, jabatan, gerejaorg, ktp, nohp,
-            namaistri, provinsi, kota, alamat, tgl_keberangkatan, tgl_kepulangan,
+    List<String> TRANSPORTASI_BANDARAHOTEL = new ArrayList<>();
+    List<String> TRANSPORTASI_HOTELACARA = new ArrayList<>();
+    String nama, role, jabatan, gerejaorg, ktp, nohp, namaistri, provinsi, kota, alamat,
             waktudatang, waktupulang, keteranganBandaraHotel, jenisTransportBandaraHotel,
             jenisTransportHotelAcara, keteranganHotelAcara, hotel, tipeKamar;
-    int umur, kasur, idhotel;
+    int umur, kasur;
     boolean denganistri, isDiurusHotelAcara, isDiurusBandaraHotel, isKonsumsi1, isKonsumsi2;
     float totalHarga;
     PesertaModel pesertaModel;
     BandaraHotel bandaraHotel;
     HotelAcara hotelAcara;
     HotelResponse hotelList;
+    TipeKamarResponse tipekamar;
     TransportasiResponse transportasiList;
-    private String status, info, hotelValue;
+    private String status, info;
 
     public RegisterFragment(){
 
@@ -181,35 +178,67 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
         loadHotel();
 
 //        Jabatan
-        ArrayAdapter<String> jabatanAdapter = new ArrayAdapter<String>(getContext(),
+        ArrayAdapter<String> jabatanAdapter = new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_dropdown_item_1line, JABATAN);
         spinner_jabatan.setAdapter(jabatanAdapter);
 
 //        Hotel
-        ArrayAdapter<String> hotelAdapter = new ArrayAdapter<String>(getContext(),
+        final ArrayAdapter<String> hotelAdapter = new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_dropdown_item_1line, HOTEL);
-        spinner_hotel.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            public void onItemSelected(AdapterView<?> arg0, View view, int position, long id) {
-                int selectedItem = spinner_hotel.getListSelection();
-                String pos = HOTEL.get(position);
-                String index = String.valueOf(arg0.getItemAtPosition(position));
-                Log.d("selected idhotel", index + pos);
-                Toast.makeText(getContext(), pos, Toast.LENGTH_SHORT).show();
-                Log.d("adsf", "the current selected item id is : " + selectedItem);
-            }
-            public void onNothingSelected(AdapterView<?> arg0) { }
-        });
         spinner_hotel.setAdapter(hotelAdapter);
+        spinner_hotel.setOnClickListener(new View.OnClickListener() {
+            String selectedHotel;
+            @Override
+            public void onClick(View view) {
+                selectedHotel = spinner_hotel.getText().toString();
+                checkHotel(selectedHotel);
+//                spinner_hotel.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//                    @Override
+//                    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+//                        selectedHotel = adapterView.getItemAtPosition(i).toString();
+//                        Toast.makeText(adapterView.getContext(), HOTEL.get(i) + " itemSelected: " + adapterView.getItemAtPosition(i).toString(),
+//                                Toast.LENGTH_SHORT).show();
+//                        Log.d("itemselected", adapterView.getItemAtPosition(i).toString());
+//                        checkHotel(selectedHotel);
+//                    }
+//
+//                    @Override
+//                    public void onNothingSelected(AdapterView<?> adapterView) {
+//                        Toast.makeText(adapterView.getContext(), "nothing selected",
+//                                Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+
+            }
+        });
+
+        spinner_hotel.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String selectedHotel = spinner_hotel.getText().toString();
+                Toast.makeText(adapterView.getContext(), HOTEL.get(i) + " itemSelected: " + adapterView.getItemAtPosition(i).toString(),
+                        Toast.LENGTH_SHORT).show();
+                Log.d("itemselected", adapterView.getItemAtPosition(i).toString());
+                checkHotel(selectedHotel);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                Toast.makeText(adapterView.getContext(), "nothing selected",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+
 
 //        Tipe Kamar
-        ArrayAdapter<String> tipeKamarAdapter = new ArrayAdapter<String>(getContext(),
+        ArrayAdapter<String> tipeKamarAdapter = new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_dropdown_item_1line, TIPEKAMAR);
         spinner_tipe_kamar.setAdapter(tipeKamarAdapter);
 
-
 //        Kasur
-        ArrayAdapter<String> bedAdapter = new ArrayAdapter<String>(getContext(),
+        ArrayAdapter<String> bedAdapter = new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_dropdown_item_1line, KASUR);
+        spinner_bed.setAdapter(bedAdapter);
 
 //        Istri
         et_nama_istri.setVisibility(View.INVISIBLE);
@@ -227,6 +256,7 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
         });
 
 //        Transportasi Bandara - Hotel
+        loadTransportasiBandaraHotel();
         et_keterangan_bandara_hotel.setVisibility(View.INVISIBLE);
         rg_bandara_hotel.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -239,8 +269,12 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
                 }
             }
         });
+        ArrayAdapter<String> bandaraHotelAdapter = new ArrayAdapter<>(getContext(),
+                android.R.layout.simple_dropdown_item_1line, TRANSPORTASI_BANDARAHOTEL);
+        spinner_jenis_transport_bandara_hotel.setAdapter(bandaraHotelAdapter);
 
 //        Transportasi Hotel - Acara
+        loadTransportasiHotelAcara();
         spinner_jenis_transport.setVisibility(View.INVISIBLE);
         et_keterangan_hotel_acara.setVisibility(View.INVISIBLE);
         rg_hotel_acara.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -255,12 +289,34 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
                 }
             }
         });
+        ArrayAdapter<String> hotelAcaraAdapter = new ArrayAdapter<>(getContext(),
+                android.R.layout.simple_dropdown_item_1line, TRANSPORTASI_HOTELACARA);
+        spinner_jenis_transport.setAdapter(hotelAcaraAdapter);
+
 
 //        Konsumsi
         if(cb_konsumsi1.isChecked()){
             isKonsumsi1 = true;
         } if(cb_konsumsi2.isChecked()){
             isKonsumsi2 = true;
+        }
+    }
+
+    private void checkHotel(String selectedHotel) {
+        Toast.makeText(getContext(), "madafaka 2", Toast.LENGTH_SHORT).show();
+//        hotel = "amaris";
+        try {
+            hotel = selectedHotel;//spinner_hotel.getText().toString();
+            Log.d("hotelspinner", hotel);
+            if(!hotel.isEmpty() && hotel!="" && hotel!=null){
+                Log.d("hotel isn't empty", hotel);
+                getTipeKamarByHotelName(hotel);
+            } else {
+                Toast.makeText(getContext(), "... "+hotel+" ...", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e){
+            Log.d("error in checkHotel", e.getLocalizedMessage());
+            Toast.makeText(getContext(), "Silakan pilih Hotel terlebih dahulu", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -399,10 +455,10 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
         });
     }
 
-    public void loadTransportasi(){
+    public void loadTransportasiBandaraHotel(){
         transportasiList = new TransportasiResponse();
         RestApi restApi = RestApi.retrofit.create(RestApi.class);
-        Call<TransportasiResponse> call = restApi.getAllTransportasi();
+        Call<TransportasiResponse> call = restApi.getAllTransportByTrip("1");
         call.enqueue(new Callback<TransportasiResponse>() {
             @Override
             public void onResponse(Call<TransportasiResponse> call, Response<TransportasiResponse> response) {
@@ -411,7 +467,7 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
                 for(int i=0; i < transportSize; i++){
                     String transportJenis = transportasiList.getTransport().get(i).getJenis();
                     float transportHarga = transportasiList.getTransport().get(i).getHarga();
-                    TRANSPORTASI.add(transportJenis);
+                    TRANSPORTASI_BANDARAHOTEL.add(transportJenis);
                 }
             }
 
@@ -421,6 +477,30 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
             }
         });
     }
+
+    public void loadTransportasiHotelAcara(){
+        transportasiList = new TransportasiResponse();
+        RestApi restApi = RestApi.retrofit.create(RestApi.class);
+        Call<TransportasiResponse> call = restApi.getAllTransportByTrip("2");
+        call.enqueue(new Callback<TransportasiResponse>() {
+            @Override
+            public void onResponse(Call<TransportasiResponse> call, Response<TransportasiResponse> response) {
+                transportasiList = response.body();
+                int transportSize = transportasiList.getTransport().size();
+                for(int i=0; i < transportSize; i++){
+                    String transportJenis = transportasiList.getTransport().get(i).getJenis();
+                    float transportHarga = transportasiList.getTransport().get(i).getHarga();
+                    TRANSPORTASI_HOTELACARA.add(transportJenis + " - Rp " + transportHarga);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<TransportasiResponse> call, Throwable t) {
+
+            }
+        });
+    }
+
 
     public void loadHotel(){
         hotelList = new HotelResponse();
@@ -433,26 +513,9 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
                 int hotelSize = hotelList.getHotelModels().size();
                 for(int i=0; i < hotelSize; i++){
                     String hotelName = hotelList.getHotelModels().get(i).getNamahotel();
-                    final int hotelId = hotelList.getHotelModels().get(i).getId();
                     HOTEL.add(hotelName);
-                    int kamarSize = hotelList.getHotelModels().get(i).getTipekamar().size();
-                    Log.d("hotel", "index["+ i + "] = " + hotelName + " | kamarSize = " + String.valueOf(kamarSize));
-                    for(int j=0; j < kamarSize ; j++){
-                        String tipeKamar = hotelList.getHotelModels().get(i).getTipekamar().get(j).getNama();
-                        Log.d("tipeKamar", "ke[" + j + "] = " + tipeKamar);
-                        TIPEKAMAR.add(tipeKamar);
-                    }
                 }
                 Log.d("hotelSize", String.valueOf(hotelSize));
-                spinner_hotel.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                    public void onItemSelected(AdapterView<?> arg0, View view, int position, long id) {
-                        String pos = spinner_hotel.getItemSelectedListener().toString();
-                        String index = String.valueOf(arg0.getItemAtPosition(position));
-                        Log.d("selected idhotel", index + pos);
-                        Toast.makeText(getContext(), HOTEL.get(position) + "-" + pos, Toast.LENGTH_SHORT).show();
-                    }
-                    public void onNothingSelected(AdapterView<?> arg0) { }
-                });
             }
 
             @Override
@@ -463,18 +526,25 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
         });
     }
 
-    private void getHotelById() {
+    private void getTipeKamarByHotelName(String namahotel) {
         RestApi restApi = RestApi.retrofit.create(RestApi.class);
-        Call<HotelResponse> call = restApi.getHotelById(idhotel);
-        call.enqueue(new Callback<HotelResponse>() {
+        Call<TipeKamarResponse> call = restApi.getTipeKamarByHotelName(namahotel);
+        call.enqueue(new Callback<TipeKamarResponse>() {
             @Override
-            public void onResponse(Call<HotelResponse> call, Response<HotelResponse> response) {
-
+            public void onResponse(Call<TipeKamarResponse> call, Response<TipeKamarResponse> response) {
+                tipekamar = response.body();
+                int kamarSize = tipekamar.getTipekamar().size();
+                Log.d("hotel", hotel + " | kamarSize = " + String.valueOf(kamarSize));
+                for(int j=0; j < kamarSize ; j++){
+                    String tipeKamar = tipekamar.getTipekamar().get(j).getNama();
+                    Log.d("tipeKamar", "ke[" + j + "] = " + tipeKamar);
+                    TIPEKAMAR.add(tipeKamar);
+                }
             }
 
             @Override
-            public void onFailure(Call<HotelResponse> call, Throwable t) {
-
+            public void onFailure(Call<TipeKamarResponse> call, Throwable t) {
+                Log.e("onfailure", t.getLocalizedMessage());
             }
         });
     }

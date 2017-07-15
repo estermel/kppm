@@ -28,7 +28,7 @@ public class HotelModel {
     @JsonProperty("namahotel")
     private String namahotel;
     @JsonProperty("tipekamar")
-    private List<TipeKamar> tipekamar = null;
+    private List<TipeKamar> tipekamar;
     @JsonProperty("status")
     private String status;
     @JsonProperty("info")

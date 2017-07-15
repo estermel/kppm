@@ -407,6 +407,15 @@
                                 android:text="@string/tidak" />
                     </RadioGroup>
 
+                    <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
+                        android:id="@+id/spinner_jenis_transport_bandara_hotel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:hint="@string/jenis_transport"
+                        android:textColorHint="@color/fade"
+                        app:met_floatingLabel="normal" />
+
                     <EditText
                         android:id="@+id/et_keterangan_bandara_hotel"
                         android:layout_width="match_parent"
@@ -459,7 +468,7 @@
                     </RadioGroup>
 
                     <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
-                        android:id="@+id/spinner_jenis_transport"
+                        android:id="@+id/spinner_jenis_transport_hotel_acara"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="5dp"

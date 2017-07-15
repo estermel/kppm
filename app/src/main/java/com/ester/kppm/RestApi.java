@@ -6,6 +6,7 @@ import com.ester.kppm.model.KonsumsiModel;
 import com.ester.kppm.model.PanitiaModel;
 import com.ester.kppm.model.PesertaModel;
 import com.ester.kppm.model.TipeKamar;
+import com.ester.kppm.model.TipeKamarResponse;
 import com.ester.kppm.model.TransportasiModel;
 import com.ester.kppm.model.TransportasiResponse;
 import com.ester.kppm.model.UserModel;
@@ -18,8 +19,10 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Query;
 
 /**
  * Created by mel on 7/10/17.
@@ -29,66 +32,20 @@ public interface RestApi {
 
     final static String URL = "http://kppm.cosmiclatte.id/";
 
-    @POST("addHotel")
-    Call<HotelModel> addHotel(@Body HotelModel hotelModel);
-
-    @POST("addKonsumsi")
-    Call<KonsumsiModel> addKonsumsi(@Body KonsumsiModel konsumsiModel);
-
-    @POST("addPanitia")
-    Call<PanitiaModel> addPanitia(@Body PanitiaModel panitiaModel);
-
-    @POST("addTransportasi")
-    Call<TransportasiModel> addTransportasi(@Body TransportasiModel transportasiModel);
-
-    @POST("editHotel")
-    Call<HotelModel> editHotel(@Body HotelModel hotelModel);
-
-    @POST("editKonsumsi")
-    Call<KonsumsiModel> editKonsumsi(@Body KonsumsiModel konsumsiModel);
-
-    @POST("editPanitia")
-    Call<PanitiaModel> editPanitia(@Body PanitiaModel panitiaModel);
-
-    @POST("editTipeKamar")
-    Call<TipeKamar> editTipeKamar(@Body TipeKamar tipeKamar);
-
-    @POST("editTransportasi")
-    Call<TransportasiModel> editTransportasi(@Body TransportasiModel transportasiModel);
-
     @GET("getAllHotel")
     Call<HotelResponse> getAllHotel();
 
+    @GET("getTipeKamarByName")
+    Call<TipeKamarResponse> getTipeKamarByHotelName(@Query("hotel") String namahotel);
+
     @GET("getAllTransport")
-    Call<TransportasiResponse> getAllTransportasi();
-
-    @GET("getHotelById")
-    Call<HotelResponse> getHotelById(@Field("id") int id);
-
-    @POST("login")
-    Call<UserModel> login(@Body UserModel userModel);
+    Call<TransportasiResponse> getAllTransportByTrip(@Query("trip") String trip);
 
     @POST("register")
     Call<PesertaModel> register(@Body PesertaModel pesertaModel);
 
     @GET("getPersonalDetails")
     Call<PesertaModel> getPersonalDetails();
-
-    @GET("rmHotel")
-    Call<HotelModel> rmHotel(@Field("id") int idHotel);
-
-    @GET("rmKonsumsi")
-    Call<KonsumsiModel> rmKonsumsi(@Field("id") int idKonsumsi);
-
-    @GET("rmPanitia")
-    Call<PanitiaModel> rmPanitia(@Field("id") int idPanitia);
-
-    @GET("rmTipeKamar")
-    Call<TipeKamar> rmTipeKamar(@Field("id") int idTipeKamar);
-
-    @GET("rmTransport")
-    Call<TransportasiModel> rmTransport(@Field("id") int idTransport);
-
 
     OkHttpClient okHttpClient = new OkHttpClient().newBuilder()
             .connectTimeout(60, TimeUnit.SECONDS)
