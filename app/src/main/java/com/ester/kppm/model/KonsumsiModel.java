@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 })
 public class KonsumsiModel {
 
+    @JsonProperty("id")
     private int id;
     @JsonProperty("jenis")
     private int jenis;

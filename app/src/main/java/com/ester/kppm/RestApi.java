@@ -3,6 +3,7 @@ package com.ester.kppm;
 import com.ester.kppm.model.HotelModel;
 import com.ester.kppm.model.HotelResponse;
 import com.ester.kppm.model.KonsumsiModel;
+import com.ester.kppm.model.KonsumsiResponse;
 import com.ester.kppm.model.PanitiaModel;
 import com.ester.kppm.model.PesertaModel;
 import com.ester.kppm.model.TipeKamar;
@@ -40,6 +41,9 @@ public interface RestApi {
 
     @GET("getAllTransport")
     Call<TransportasiResponse> getAllTransportByTrip(@Query("trip") String trip);
+
+    @GET("getAllKonsumsi")
+    Call<KonsumsiResponse> getAllKonsumsi();
 
     @POST("register")
     Call<PesertaModel> register(@Body PesertaModel pesertaModel);

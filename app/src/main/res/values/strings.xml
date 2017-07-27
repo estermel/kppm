@@ -24,7 +24,7 @@
     <string name="tipe_kamar">Tipe kamar</string>
     <string name="bed">Kasur</string>
     <string name="konsumsi">Konsumsi selama acara</string>
-    <string name="konsumsi1">Makan siang dan malam selama acara</string>
+    <string name="konsumsi1">Makan siang + snack dan makan malam selama acara</string>
     <string name="konsumsi2">Snack (makanan ringan)</string>
     <string name="total_harga">Total harga (akomodasi + transportasi + konsumi)</string>
     <string name="isi_alamat">Tulis alamat</string>

@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.google.gson.annotations.SerializedName;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
@@ -21,41 +22,41 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 })
 public class HotelAcara {
 
-    @JsonProperty("diurus")
+    @SerializedName("diurus")
     private boolean diurus;
-    @JsonProperty("jenis")
+    @SerializedName("jenis")
     private String jenis;
-    @JsonProperty("keterangan")
+    @SerializedName("keterangan")
     private String keterangan;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("diurus")
+    @SerializedName("diurus")
     public boolean getDiurus() {
         return diurus;
     }
 
-    @JsonProperty("diurus")
+    @SerializedName("diurus")
     public void setDiurus(boolean diurus) {
         this.diurus = diurus;
     }
 
-    @JsonProperty("jenis")
+    @SerializedName("jenis")
     public String getJenis() {
         return jenis;
     }
 
-    @JsonProperty("jenis")
+    @SerializedName("jenis")
     public void setJenis(String jenis) {
         this.jenis = jenis;
     }
 
-    @JsonProperty("keterangan")
+    @SerializedName("keterangan")
     public String getKeterangan() {
         return keterangan;
     }
 
-    @JsonProperty("keterangan")
+    @SerializedName("keterangan")
     public void setKeterangan(String keterangan) {
         this.keterangan = keterangan;
     }

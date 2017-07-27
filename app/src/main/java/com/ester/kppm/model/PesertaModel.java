@@ -10,8 +10,8 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.google.gson.annotations.SerializedName;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
@@ -27,8 +27,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         "provinsi",
         "kota",
         "alamat",
-        "bandara-hotel",
-        "hotel-acara",
+        "bandarahotel",
+        "hotelacara",
         "hotel",
         "tipekamar",
         "kasur",
@@ -40,249 +40,249 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 })
 public class PesertaModel {
 
-    @JsonProperty("role")
+    @SerializedName("role")
     private String role;
-    @JsonProperty("nama")
+    @SerializedName("nama")
     private String nama;
-    @JsonProperty("jabatan")
+    @SerializedName("jabatan")
     private String jabatan;
-    @JsonProperty("gerejaorg")
+    @SerializedName("gerejaorg")
     private String gerejaorg;
-    @JsonProperty("ktp")
+    @SerializedName("ktp")
     private String ktp;
-    @JsonProperty("nohp")
+    @SerializedName("nohp")
     private String nohp;
-    @JsonProperty("umur")
+    @SerializedName("umur")
     private int umur;
-    @JsonProperty("denganistri")
+    @SerializedName("denganistri")
     private boolean denganistri;
-    @JsonProperty("namaistri")
+    @SerializedName("namaistri")
     private String namaistri;
-    @JsonProperty("provinsi")
+    @SerializedName("provinsi")
     private String provinsi;
-    @JsonProperty("kota")
+    @SerializedName("kota")
     private String kota;
-    @JsonProperty("alamat")
+    @SerializedName("alamat")
     private String alamat;
-    @JsonProperty("bandara-hotel")
+    @SerializedName("bandarahotel")
     private BandaraHotel bandaraHotel;
-    @JsonProperty("hotel-acara")
+    @SerializedName("hotelacara")
     private HotelAcara hotelAcara;
-    @JsonProperty("hotel")
+    @SerializedName("hotel")
     private String hotel;
-    @JsonProperty("tipekamar")
+    @SerializedName("tipekamar")
     private String tipekamar;
-    @JsonProperty("kasur")
+    @SerializedName("kasur")
     private int kasur;
-    @JsonProperty("konsumsi1")
+    @SerializedName("konsumsi1")
     private boolean konsumsi1;
-    @JsonProperty("konsumsi2")
+    @SerializedName("konsumsi2")
     private boolean konsumsi2;
-    @JsonProperty("totalharga")
+    @SerializedName("totalharga")
     private float totalharga;
-    @JsonProperty("status")
+    @SerializedName("status")
     private String status;
-    @JsonProperty("info")
+    @SerializedName("info")
     private String info;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("role")
+    @SerializedName("role")
     public String getRole() {
         return role;
     }
 
-    @JsonProperty("role")
+    @SerializedName("role")
     public void setRole(String role) {
         this.role = role;
     }
 
-    @JsonProperty("nama")
+    @SerializedName("nama")
     public String getNama() {
         return nama;
     }
 
-    @JsonProperty("nama")
+    @SerializedName("nama")
     public void setNama(String nama) {
         this.nama = nama;
     }
 
-    @JsonProperty("jabatan")
+    @SerializedName("jabatan")
     public String getJabatan() {
         return jabatan;
     }
 
-    @JsonProperty("jabatan")
+    @SerializedName("jabatan")
     public void setJabatan(String jabatan) {
         this.jabatan = jabatan;
     }
 
-    @JsonProperty("gerejaorg")
+    @SerializedName("gerejaorg")
     public String getGerejaorg() {
         return gerejaorg;
     }
 
-    @JsonProperty("gerejaorg")
+    @SerializedName("gerejaorg")
     public void setGerejaorg(String gerejaorg) {
         this.gerejaorg = gerejaorg;
     }
 
-    @JsonProperty("ktp")
+    @SerializedName("ktp")
     public String getKtp() {
         return ktp;
     }
 
-    @JsonProperty("ktp")
+    @SerializedName("ktp")
     public void setKtp(String ktp) {
         this.ktp = ktp;
     }
 
-    @JsonProperty("nohp")
+    @SerializedName("nohp")
     public String getNohp() {
         return nohp;
     }
 
-    @JsonProperty("nohp")
+    @SerializedName("nohp")
     public void setNohp(String nohp) {
         this.nohp = nohp;
     }
 
-    @JsonProperty("umur")
+    @SerializedName("umur")
     public int getUmur() {
         return umur;
     }
 
-    @JsonProperty("umur")
+    @SerializedName("umur")
     public void setUmur(int umur) {
         this.umur = umur;
     }
 
-    @JsonProperty("denganistri")
+    @SerializedName("denganistri")
     public boolean getDenganistri() {
         return denganistri;
     }
 
-    @JsonProperty("denganistri")
+    @SerializedName("denganistri")
     public void setDenganistri(boolean denganistri) {
         this.denganistri = denganistri;
     }
 
-    @JsonProperty("namaistri")
+    @SerializedName("namaistri")
     public String getNamaistri() {
         return namaistri;
     }
 
-    @JsonProperty("namaistri")
+    @SerializedName("namaistri")
     public void setNamaistri(String namaistri) {
         this.namaistri = namaistri;
     }
 
-    @JsonProperty("provinsi")
+    @SerializedName("provinsi")
     public String getProvinsi() {
         return provinsi;
     }
 
-    @JsonProperty("provinsi")
+    @SerializedName("provinsi")
     public void setProvinsi(String provinsi) {
         this.provinsi = provinsi;
     }
 
-    @JsonProperty("kota")
+    @SerializedName("kota")
     public String getKota() {
         return kota;
     }
 
-    @JsonProperty("kota")
+    @SerializedName("kota")
     public void setKota(String kota) {
         this.kota = kota;
     }
 
-    @JsonProperty("alamat")
+    @SerializedName("alamat")
     public String getAlamat() {
         return alamat;
     }
 
-    @JsonProperty("alamat")
+    @SerializedName("alamat")
     public void setAlamat(String alamat) {
         this.alamat = alamat;
     }
 
-    @JsonProperty("bandara-hotel")
+    @SerializedName("bandarahotel")
     public BandaraHotel getBandaraHotel() {
         return bandaraHotel;
     }
 
-    @JsonProperty("bandara-hotel")
+    @SerializedName("bandarahotel")
     public void setBandaraHotel(BandaraHotel bandaraHotel) {
         this.bandaraHotel = bandaraHotel;
     }
 
-    @JsonProperty("hotel-acara")
+    @SerializedName("hotelacara")
     public HotelAcara getHotelAcara() {
         return hotelAcara;
     }
 
-    @JsonProperty("hotel-acara")
+    @SerializedName("hotelacara")
     public void setHotelAcara(HotelAcara hotelAcara) {
         this.hotelAcara = hotelAcara;
     }
 
-    @JsonProperty("hotel")
+    @SerializedName("hotel")
     public String getHotel() {
         return hotel;
     }
 
-    @JsonProperty("hotel")
+    @SerializedName("hotel")
     public void setHotel(String hotel) {
         this.hotel = hotel;
     }
 
-    @JsonProperty("tipekamar")
+    @SerializedName("tipekamar")
     public String getTipekamar() {
         return tipekamar;
     }
 
-    @JsonProperty("tipekamar")
+    @SerializedName("tipekamar")
     public void setTipekamar(String tipekamar) {
         this.tipekamar = tipekamar;
     }
 
-    @JsonProperty("kasur")
+    @SerializedName("kasur")
     public int getKasur() {
         return kasur;
     }
 
-    @JsonProperty("kasur")
+    @SerializedName("kasur")
     public void setKasur(int kasur) {
         this.kasur = kasur;
     }
 
-    @JsonProperty("konsumsi1")
+    @SerializedName("konsumsi1")
     public boolean getKonsumsi1() {
         return konsumsi1;
     }
 
-    @JsonProperty("konsumsi1")
+    @SerializedName("konsumsi1")
     public void setKonsumsi1(boolean konsumsi1) {
         this.konsumsi1 = konsumsi1;
     }
 
-    @JsonProperty("konsumsi2")
+    @SerializedName("konsumsi2")
     public boolean getKonsumsi2() {
         return konsumsi2;
     }
 
-    @JsonProperty("konsumsi2")
+    @SerializedName("konsumsi2")
     public void setKonsumsi2(boolean konsumsi2) {
         this.konsumsi2 = konsumsi2;
     }
 
-    @JsonProperty("totalharga")
+    @SerializedName("totalharga")
     public float getTotalharga() {
         return totalharga;
     }
 
-    @JsonProperty("totalharga")
+    @SerializedName("totalharga")
     public void setTotalharga(float totalharga) {
         this.totalharga = totalharga;
     }

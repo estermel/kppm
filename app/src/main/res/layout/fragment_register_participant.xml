@@ -565,11 +565,11 @@
                         android:padding="10dp"
                         android:textColor="@color/fade"/>
                     <TextView
+                        android:id="@+id/tv_ket_harga_konsumsi"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingLeft="10dp"
-                        android:paddingRight="10dp"
-                        android:text="@string/ket_konsumsi_harga"/>
+                        android:paddingRight="10dp"/>
                     <LinearLayout
                         android:orientation="horizontal"
                         android:layout_width="match_parent"
@@ -577,18 +577,10 @@
                         android:padding="10dp">
                         <CheckBox
                             android:id="@+id/cb_konsumsi1"
-                            android:layout_width="0dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight=".5"
                             android:layout_margin="5dp"
-                            android:text="@string/konsumsi1"/>
-                        <CheckBox
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight=".5"
-                            android:layout_margin="5dp"
-                            android:id="@+id/cb_konsumsi2"
-                            android:text="@string/konsumsi2"/>
+                            android:text= "@string/konsumsi1"/>
                     </LinearLayout>
                 </LinearLayout>
             </android.support.v7.widget.CardView>
