@@ -160,9 +160,9 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
             waktudatang, waktupulang, keteranganBandaraHotel, jenisTransportBandaraHotel,
             jenisTransportHotelAcara, keteranganHotelAcara, hotel, tipeKamar;
     int umur, kasur;
-    boolean denganistri, isDiurusHotelAcara, isDiurusBandaraHotel, isKonsumsi1, isKonsumsi2;
+    boolean denganistri=false, isDiurusHotelAcara, isDiurusBandaraHotel, isKonsumsi1=false;
     float totalHarga, hargaKamar, hargaTransportBandaraHotel, hargaTransportHotelAcara,
-            hargaKonsumsi;
+            hargaKonsumsi, hargaTBanHotel, hargaTHotAcara;
     PesertaModel pesertaModel;
     BandaraHotel bandaraHotel;
     HotelAcara hotelAcara;
@@ -175,7 +175,7 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
     HashMap<String, Float> mapTransBandaraHotel;
     HashMap<String, Float> mapTransHotelAcara;
     ProgressDialog dialog;
-    float sum=0, harga;
+    float sum=0, harga, grandTotal;
 
     public RegisterFragment(){
 
@@ -188,41 +188,27 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
         pd = new ProgressDialog(getActivity());
         dialog = new ProgressDialog(getActivity());
         initViews();
-        initListener();
         return view;
     }
 
-    private void initListener() {
-        if(spinner_jenis_transport_bandara_hotel.getText().toString().equals("")){
-            hargaTransportBandaraHotel = 0;
-        } if(spinner_jenis_transport.getText().toString().equals("")){
-            hargaTransportHotelAcara = 0;
-        } if(spinner_tipe_kamar.getText().toString().equals("")){
-            hargaKamar = 0;
-        } if(!spinner_jenis_transport_bandara_hotel.getText().toString().equals("")){
-            hargaTransportBandaraHotel = mapTransBandaraHotel.get(spinner_jenis_transport_bandara_hotel.getText().toString());
-        } if(!spinner_jenis_transport.getText().toString().equals("")){
-            hargaTransportHotelAcara = mapTransHotelAcara.get(spinner_jenis_transport.getText().toString());
-        } if(!spinner_tipe_kamar.getText().toString().equals("")){
-            hargaKamar = mapTipeKamar.get(spinner_tipe_kamar.getText().toString());
-        } if(cb_konsumsi1.isChecked() && denganistri){
-            hargaKonsumsi = 2 * hargaKonsumsi;
-        } if(cb_konsumsi1.isChecked() && !denganistri){
-            hargaKonsumsi = 1 * hargaKonsumsi;
-        }
-    }
 
     private void setTotalHarga() {
         NumberFormat format = NumberFormat.getCurrencyInstance(Locale.getDefault());
         format.setCurrency(Currency.getInstance("IDR"));
-        totalHarga = hargaTransportBandaraHotel + hargaTransportHotelAcara + hargaKamar
-                + hargaKonsumsi;
+        if(!isKonsumsi1){
+            totalHarga = hargaTransportBandaraHotel + hargaTransportHotelAcara + hargaKamar
+                    + 0;
+        } if(isKonsumsi1){
+            totalHarga = hargaTransportBandaraHotel + hargaTransportHotelAcara + hargaKamar
+                    + hargaKonsumsi;
+        }
         String result = format.format(totalHarga) + ",-";
         if(totalHarga!=0){
             v_total_harga.setText(result);
         } else {
             v_total_harga.setText("Rp 0");
         }
+        grandTotal = totalHarga;
         Log.d("setTotalHarga", result + "...");
     }
 
@@ -231,7 +217,7 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
         fragmentManager = getActivity().getSupportFragmentManager();
         calendar = Calendar.getInstance();
         loadHotel();
-
+        setRole();
 //        Jabatan
         ArrayAdapter<String> jabatanAdapter = new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_dropdown_item_1line, JABATAN);
@@ -243,7 +229,6 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
             public void onTextChanged(CharSequence s, int start, int before,
                                       int count) {
                 if(s.equals("Tanggal Keberangkatan")){
-                    Toast.makeText(getContext(), "sama", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -255,7 +240,35 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
             @Override
             public void afterTextChanged(Editable s) {
                 if(!s.equals("Tanggal Keberangkatan")){
-                    Toast.makeText(getContext(), "beda", Toast.LENGTH_SHORT).show();
+//                    check departure date with arrival date should be here
+                    tgl_datang = v_tgl_keberangkatan.getText().toString();
+                    validateDate(tgl_datang, tgl_pulang);
+                }
+            }
+
+        });
+
+        v_tgl_kepulangan.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before,
+                                      int count) {
+                if(s.equals("Tanggal Kepulangan")){
+
+                }
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count,
+                                          int after) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(!s.equals("Tanggal Keberangkatan")){
+//                    check departure date with arrival date should be here
+                    tgl_pulang = v_tgl_kepulangan.getText().toString();
+                    validateDate(tgl_datang, tgl_pulang);
                 }
             }
 
@@ -305,20 +318,23 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
             public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
                 if (i == R.id.rb_bersama_istri){
                     denganistri = true;
-                    hargaKonsumsi = 2 * hargaKonsumsi;
-                    hargaTransportBandaraHotel = 2 * hargaTransportBandaraHotel;
-                    hargaTransportHotelAcara = 2 * hargaTransportHotelAcara;
+                    if(isKonsumsi1){
+                        hargaKonsumsi = 2 * sum;
+                    } if(!isKonsumsi1){
+                        hargaKonsumsi = 0;
+                    }
                     Log.d("hargaKonsumsi", "denganIstri: Rp " + hargaKonsumsi);
-                    Log.d("hargaTBanHot", "denganIstri: Rp " + hargaTransportBandaraHotel);
-                    Log.d("hargaTHotAca", "denganIstri: Rp " + hargaTransportHotelAcara);
                     setTotalHarga();
                     et_nama_istri.setVisibility(View.VISIBLE);
                 } if (i == R.id.rb_tidak_bersama_istri){
                     denganistri = false;
-                    hargaKonsumsi = sum;
+                    if(isKonsumsi1){
+                        hargaKonsumsi = sum;
+                    } if(!isKonsumsi1){
+                        hargaKonsumsi = 0;
+                    }
                     Log.d("hargaKonsumsi", "tanpaIstri: Rp " + hargaKonsumsi);
-                    Log.d("hargaTBanHot", "tanpaIstri: Rp " + hargaTransportBandaraHotel);
-                    Log.d("hargaTHotAca", "tanpaIstri: Rp " + hargaTransportHotelAcara);                    setTotalHarga();
+                    setTotalHarga();
                     et_nama_istri.setVisibility(View.INVISIBLE);
                 }
             }
@@ -386,9 +402,14 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
             public void onTextChanged(CharSequence s, int start,
                                       int before, int count) {
                 if(s.length() != 0)
-                    hargaTransportBandaraHotel = mapTransBandaraHotel.get(spinner_jenis_transport_bandara_hotel.getText().toString());
+                    hargaTBanHotel = mapTransBandaraHotel.get(spinner_jenis_transport_bandara_hotel.getText().toString());
+                    if(denganistri){
+                        hargaTransportBandaraHotel = 2 * hargaTBanHotel;
+                    } if(!denganistri){
+                        hargaTransportHotelAcara = 1 * hargaTBanHotel;
+                    }
                 setTotalHarga();
-                Log.d("hargaTBanHot listener", String.valueOf(hargaTransportBandaraHotel));
+                Log.d("hargaTBandaraHotel", String.valueOf(hargaTransportBandaraHotel));
             }
         });
 
@@ -406,9 +427,14 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
             public void onTextChanged(CharSequence s, int start,
                                       int before, int count) {
                 if(s.length() != 0)
-                    hargaTransportHotelAcara = mapTransHotelAcara.get(spinner_jenis_transport.getText().toString());
+                    hargaTHotAcara = mapTransHotelAcara.get(spinner_jenis_transport.getText().toString());
+                    if(denganistri){
+                        hargaTransportHotelAcara = 2 * hargaTHotAcara;
+                    } if(!denganistri){
+                        hargaTransportHotelAcara = 1 * hargaTHotAcara;
+                    }
                 setTotalHarga();
-                Log.d("hargaTHotAca listener", String.valueOf(hargaTransportHotelAcara));
+                Log.d("hargaTHotelAcara", String.valueOf(hargaTransportHotelAcara));
             }
         });
 
@@ -427,8 +453,11 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
                                       int before, int count) {
                 if(s.length() != 0)
                     hargaKamar = mapTipeKamar.get(spinner_tipe_kamar.getText().toString());
+                    if(role.equals("khusus") && !denganistri){
+                        hargaKamar = hargaKamar / 2;
+                    }
                 setTotalHarga();
-                Log.d("hargaKamar listener", String.valueOf(hargaKamar));
+                Log.d("hargaKamar", String.valueOf(hargaKamar));
             }
         });
 
@@ -443,7 +472,11 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
                 if (isChecked){
                     Log.d("cb_konsumsi1", "checked");
                     isKonsumsi1 = true;
-                    hargaKonsumsi = sum;
+                    if(denganistri){
+                        hargaKonsumsi = 2 * sum;
+                    } if(!denganistri){
+                        hargaKonsumsi = sum;
+                    }
                     Log.d("cb_konsumsi1", "checked: " + hargaKonsumsi);
                     setTotalHarga();
                 }
@@ -459,6 +492,20 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
             }
         });
 
+    }
+
+    private void validateDate(String tgl_datang, String tgl_pulang) {
+        if(tgl_datang.equals(tgl_pulang)){
+            Toast.makeText(getContext(), "Silakan isi tanggal yang benar", Toast.LENGTH_SHORT).show();
+        }
+//        Check in advance
+//        if(tgl_datang >= tgl_pulang){
+//            Toast.makeText(getContext(), "Kepulangan tidak boleh lebih dulu dari pada kedatangan"
+//                    , Toast.LENGTH_SHORT).show();
+//        } if(tgl_pulang <= tgl_datang){
+//            Toast.makeText(getContext(), "Kepulangan tidak boleh lebih dulu dari pada kedatangan"
+//                    , Toast.LENGTH_SHORT).show();
+//        }
     }
 
     private void loadKonsumsi() {
@@ -608,7 +655,7 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
         hotelAcara = new HotelAcara();
         pesertaModel.setNama(nama);
         pesertaModel.setRole(role);
-        pesertaModel.setTotalharga(totalHarga);
+        pesertaModel.setTotalharga(grandTotal);
         pesertaModel.setGerejaorg(gerejaorg);
         pesertaModel.setJabatan(jabatan);
         pesertaModel.setKtp(ktp);
@@ -623,7 +670,6 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
         pesertaModel.setTipekamar(tipeKamar);
         pesertaModel.setKasur(kasur);
         pesertaModel.setKonsumsi1(isKonsumsi1);
-        pesertaModel.setKonsumsi2(isKonsumsi2);
         hotelAcara.setDiurus(isDiurusHotelAcara);
         hotelAcara.setJenis(jenisTransportHotelAcara);
         hotelAcara.setKeterangan(keteranganHotelAcara);
@@ -654,13 +700,12 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
         Log.d("Register", "jenisTransportHotelAcara: " + jenisTransportHotelAcara+" Rp " + hargaTransportHotelAcara + ",-");
         Log.d("Register", "keteranganHotelAcara: " + keteranganHotelAcara);
         Log.d("Register", "isKonsumsi1: " + isKonsumsi1);
-        Log.d("Register", "isKonsumsi2: " + isKonsumsi2);
         Log.d("Register", "isDiurusBandaraHotel: " + isDiurusBandaraHotel);
         Log.d("Register", "isDiurusHotelAcara: " + isDiurusHotelAcara);
         Log.d("Register", "hotel: " + hotel);
         Log.d("Register", "hargaKonsumsi: Rp " + hargaKonsumsi);
         Log.d("Register", "hargaKamar: " + tipeKamar + " Rp " + hargaKamar + ",-");
-        Log.d("Register", "totalHarga: Rp " + totalHarga + ",-");
+        Log.d("Register", "totalHarga: Rp " + grandTotal + ",-");
         RestApi restApi = RestApi.retrofit.create(RestApi.class);
         Call<PesertaModel> call = restApi.register(pesertaModel);
         call.enqueue(new Callback<PesertaModel>() {
@@ -671,11 +716,11 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
                 status = pesertaModel.getStatus();
                 info = pesertaModel.getInfo();
                 Log.d("btn_register", "status: " + status + "\ninfo: " + info);
+                pd.show();
                 if(status.equals("202")){
                     pd.setContentView(R.layout.custom);
                     pd.setTitle("BERHASIL");
                     pd.setCancelable(false);
-                    pd.show();
 
                     // set the custom dialog components - text, image and button
                     TextView text = (TextView) pd.findViewById(R.id.text);
@@ -691,6 +736,8 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
                             pd.dismiss();
                         }
                     });
+
+
                 } if(!status.equals("202")){
                     Toast.makeText(getContext(), info,
                             Toast.LENGTH_SHORT).show();
@@ -844,7 +891,6 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
     }
 
     private void getAllData() {
-        setRole();
         nama = et_fullname.getText().toString();
         jabatan = spinner_jabatan.getText().toString();
         gerejaorg = et_org_gereja.getText().toString();
