@@ -8,7 +8,6 @@ import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,7 +21,6 @@ import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -42,13 +40,16 @@ import com.ester.kppm.model.TransportasiResponse;
 import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
 
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Currency;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -159,7 +160,7 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
             tgl_datang, tgl_pulang, jam_datang, jam_pulang,
             waktudatang, waktupulang, keteranganBandaraHotel, jenisTransportBandaraHotel,
             jenisTransportHotelAcara, keteranganHotelAcara, hotel, tipeKamar;
-    int umur, kasur;
+    int umur, kasur, lamaMenginap;
     boolean denganistri=false, isDiurusHotelAcara, isDiurusBandaraHotel, isKonsumsi1=false;
     float totalHarga, hargaKamar, hargaTransportBandaraHotel, hargaTransportHotelAcara,
             hargaKonsumsi, hargaTBanHotel, hargaTHotAcara, sum=0,
@@ -179,6 +180,16 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
     String kasur1 = "Single bed";
     String kasur2 = "Double bed";
     String kasur3 = "Extra bed";
+    String khusus = "khusus";
+    String umum = "umum";
+    String TAG = "RegisterFragment";
+
+    /*
+    New global variable here for calculating totalHarga
+     */
+    private boolean istri, transport1, transport2, makan;
+    private float hargaT1, hargaT2, hargaHotel, hargaMakan, hargaExtrabed,
+        countHotelPrice, hargaTotal;
 
     public RegisterFragment(){
 
@@ -191,28 +202,135 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
         pd = new ProgressDialog(getActivity());
         dialog = new ProgressDialog(getActivity());
         initViews();
+        initListener();
         return view;
     }
 
+    private void initListener() {
 
-    private void setTotalHarga() {
+////      CHECK TRANSPORT 1
+//        rg_bandara_hotel.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
+//                if(i == R.id.rb_diurusPanitia_bandara_hotel){
+//                    isDiurusBandaraHotel = true;
+//                    spinner_jenis_transport_bandara_hotel.setVisibility(View.VISIBLE);
+//                    spinner_jenis_transport_bandara_hotel.setText("");
+//                    et_keterangan_bandara_hotel.setVisibility(View.VISIBLE);
+//                    hargaT1 = hargaTBanHotel;
+//                    setHargaTotal_v2();
+//                } if(i == R.id.rb_tidakDiurusPanitia_bandara_hotel){
+//                    isDiurusBandaraHotel = false;
+//                    spinner_jenis_transport_bandara_hotel.setVisibility(View.INVISIBLE);
+//                    et_keterangan_bandara_hotel.setVisibility(View.INVISIBLE);
+//                    hargaT1 = 0;
+//                    checkWifeStatus();
+//                    setHargaTotal_v2();
+//                }
+//            }
+//        });
+//
+////      CHECK TRANSPORT 2
+//        rg_hotel_acara.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
+//                if(i == R.id.rb_diurusPanitia_hotel_acara){
+//                    isDiurusHotelAcara = true;
+//                    spinner_jenis_transport.setVisibility(View.VISIBLE);
+//                    spinner_jenis_transport.setText("");
+//                    et_keterangan_hotel_acara.setVisibility(View.VISIBLE);
+//                    hargaT2 = hargaTHotAcara;
+//                    setHargaTotal_v2();
+//                } if(i == R.id.rb_tidakDiurusPanitia_hotel_acara){
+//                    isDiurusHotelAcara = false;
+//                    spinner_jenis_transport.setVisibility(View.INVISIBLE);
+//                    et_keterangan_hotel_acara.setVisibility(View.INVISIBLE);
+//                    hargaT2 = 0;
+//                    checkWifeStatus();
+//                    setHargaTotal_v2();
+//                }
+//            }
+//        });
+
+//      CHECK MAKAN
+        cb_konsumsi1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,
+                                         boolean isChecked) {
+                if (cb_konsumsi1.isChecked()){
+                    isKonsumsi1 = true;
+                    hargaMakan = sum;
+                }
+
+                else if (!(cb_konsumsi1.isChecked())) {
+                    isKonsumsi1 = false;
+                    hargaMakan = 0;
+                }
+                Log.d(TAG, "makan: "+ isKonsumsi1);
+                checkWifeStatus();
+                setHargaTotal_v2();
+            }
+        });
+    }
+
+    private void checkWifeStatus(){
+        if(denganistri) {
+            if (role.equals(khusus) || role.equals(umum)) {
+                hargaT1 = hargaTransportBandaraHotel * 2;
+                hargaT2 = hargaTransportHotelAcara * 2;
+                hargaKonsumsi = hargaMakan * 2;
+                hargaHotel = (hargaKamar * lamaMenginap);
+                hargaExtrabed = (extra * lamaMenginap);
+                countHotelPrice = (hargaHotel + hargaExtrabed);
+                Log.d(TAG, "dengan istri: " + denganistri + " role: " + role +
+                        "\ncountHotelPrice: " + hargaHotel + " + " + hargaExtrabed + " = "
+                        + (hargaHotel+hargaExtrabed));
+            }
+        } if(!denganistri){
+            if(role.equals(khusus)){
+                hargaT1 = hargaTransportBandaraHotel * 1;
+                hargaT2 = hargaTransportHotelAcara * 1;
+                hargaKonsumsi = hargaMakan * 1;
+                hargaHotel = ((hargaKamar/2)*lamaMenginap);
+                hargaExtrabed = (extra * lamaMenginap);
+                countHotelPrice = (hargaHotel + hargaExtrabed);
+                Log.d(TAG, "dengan istri: " + denganistri + " role: " + role +
+                        "\ncountHotelPrice: " + hargaHotel + " + " + hargaExtrabed + " = "
+                        + (hargaHotel+hargaExtrabed));
+            }
+            if(role.equals(umum)){
+                hargaT1 = hargaT1 * 1;
+                hargaT2 = hargaT2 * 1;
+                hargaKonsumsi = hargaMakan * 1;
+                hargaHotel = (hargaKamar * lamaMenginap);
+                hargaExtrabed = (extra * lamaMenginap);
+                countHotelPrice = (hargaHotel + hargaExtrabed);
+                Log.d(TAG, "dengan istri: " + denganistri + " role: " + role +
+                        "\ncountHotelPrice: " + hargaHotel + " + " + hargaExtrabed + " = "
+                        + (hargaHotel+hargaExtrabed));
+            }
+        }
+
+    }
+
+    private void setHargaTotal_v2() {
         NumberFormat format = NumberFormat.getCurrencyInstance(Locale.getDefault());
         format.setCurrency(Currency.getInstance("IDR"));
-        if(!isKonsumsi1){
-            totalHarga = hargaTransportBandaraHotel + hargaTransportHotelAcara + sumKamar + extra
-                    + 0;
-        } if(isKonsumsi1){
-            totalHarga = hargaTransportBandaraHotel + hargaTransportHotelAcara + sumKamar + extra
-                    + hargaKonsumsi;
-        }
-        grandTotal = totalHarga;
-        String result = format.format(grandTotal) + ",-";
-        if(totalHarga!=0){
+        hargaTotal = hargaT1 + hargaT2 + countHotelPrice + hargaKonsumsi;
+        Log.d(TAG, "hargaTotal untuk role: "+ role + " & denganIstri: " + denganistri
+                + "\nT1: " + isDiurusBandaraHotel + " & T2: " + isDiurusHotelAcara + " makan: " + isKonsumsi1
+                + "\nhargaT1: " + hargaT1 + "\nhargaT2: " + hargaT2
+                + "\nhargaHotel: " + hargaHotel + "\nhargaKonsumsi: " + hargaKonsumsi
+                + "\nhargaExtrabed: " + hargaExtrabed + "\nlamaMenginap: " + lamaMenginap
+                + "\ncountHotel: " + countHotelPrice
+                + "\nhargaTotal: " + hargaTotal);
+        String result = format.format(hargaTotal) + ",-";
+        if(hargaTotal!=0){
             v_total_harga.setText(result);
         } else {
             v_total_harga.setText("Rp 0");
         }
-        Log.d("setTotalHarga", result + "...");
     }
 
     private void initViews() {
@@ -221,10 +339,39 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
         calendar = Calendar.getInstance();
         loadHotel();
         setRole();
+
+        rb_tidak_bersama_istri.setChecked(true);
+        rb_tidakDiurusPanitia_bandara_hotel.setChecked(true);
+        rb_tidakDiurusPanitia_hotel_acara.setChecked(true);
+
+        denganistri=false;
+        isDiurusBandaraHotel=false;
+        isDiurusHotelAcara=false;
+        et_nama_istri.setVisibility(View.INVISIBLE);
+
 //        Jabatan
         ArrayAdapter<String> jabatanAdapter = new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_dropdown_item_1line, JABATAN);
         spinner_jabatan.setAdapter(jabatanAdapter);
+
+//      CHECK WIFE
+//        checkWife();
+        rg_istri.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
+                if (i == R.id.rb_bersama_istri){
+                    denganistri = true;
+                    et_nama_istri.setVisibility(View.VISIBLE);
+                    checkWifeStatus();
+                    setHargaTotal_v2();
+                } if (i == R.id.rb_tidak_bersama_istri){
+                    denganistri = false;
+                    et_nama_istri.setVisibility(View.INVISIBLE);
+                    checkWifeStatus();
+                    setHargaTotal_v2();
+                }
+            }
+        });
 
         v_tgl_keberangkatan.addTextChangedListener(new TextWatcher() {
 
@@ -245,10 +392,11 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
                 if(!s.equals("Tanggal Keberangkatan")){
 //                    check departure date with arrival date should be here
                     tgl_datang = v_tgl_keberangkatan.getText().toString();
-                    validateDate(tgl_datang, tgl_pulang);
+                    tgl_pulang = v_tgl_kepulangan.getText().toString();
+                    countDays(tgl_datang, tgl_pulang);
+                    setHargaTotal_v2();
                 }
             }
-
         });
 
         v_tgl_kepulangan.addTextChangedListener(new TextWatcher() {
@@ -270,24 +418,180 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
             public void afterTextChanged(Editable s) {
                 if(!s.equals("Tanggal Keberangkatan")){
 //                    check departure date with arrival date should be here
+                    tgl_datang = v_tgl_keberangkatan.getText().toString();
                     tgl_pulang = v_tgl_kepulangan.getText().toString();
-                    validateDate(tgl_datang, tgl_pulang);
+                    countDays(tgl_datang, tgl_pulang);
+                    setHargaTotal_v2();
                 }
             }
-
         });
 
 //        Hotel
         final ArrayAdapter<String> hotelAdapter = new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_dropdown_item_1line, HOTEL);
         spinner_hotel.setAdapter(hotelAdapter);
-        spinner_hotel.setOnClickListener(new View.OnClickListener() {
+
+        ArrayAdapter<String> bedAdapter = new ArrayAdapter<>(getContext(),
+                android.R.layout.simple_dropdown_item_1line, KASUR);
+        spinner_bed.setAdapter(bedAdapter);
+
+        loadTipeKamar();
+
+//        Transportasi Bandara - Hotel
+        loadTransportasiBandaraHotel();
+        spinner_jenis_transport_bandara_hotel.setVisibility(View.INVISIBLE);
+        et_keterangan_bandara_hotel.setVisibility(View.INVISIBLE);
+//        rg_bandara_hotel.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
+//                if(i == R.id.rb_diurusPanitia_bandara_hotel){
+//                    isDiurusBandaraHotel = true;
+//                    Log.d(TAG, "diurus panitia bandara hotel: " + isDiurusBandaraHotel);
+//                    spinner_jenis_transport_bandara_hotel.setVisibility(View.VISIBLE);
+//                    spinner_jenis_transport_bandara_hotel.setText("");
+//                    et_keterangan_bandara_hotel.setVisibility(View.VISIBLE);
+//                    checkWifeStatus();
+//                    setHargaTotal_v2();
+//                } if(i == R.id.rb_tidakDiurusPanitia_bandara_hotel){
+//                    isDiurusBandaraHotel = false;
+//                    Log.d(TAG, "diurus panitia bandara hotel: " + isDiurusBandaraHotel);
+//                    hargaTransportBandaraHotel = 0;
+//                    spinner_jenis_transport_bandara_hotel.setVisibility(View.INVISIBLE);
+//                    et_keterangan_bandara_hotel.setVisibility(View.INVISIBLE);
+//                    checkWifeStatus();
+//                    setHargaTotal_v2();
+//                }
+//            }
+//        });
+        ArrayAdapter<String> bandaraHotelAdapter = new ArrayAdapter<>(getContext(),
+                android.R.layout.simple_dropdown_item_1line, TRANSPORTASI_BANDARAHOTEL);
+        spinner_jenis_transport_bandara_hotel.setAdapter(bandaraHotelAdapter);
+
+//        Transportasi Hotel - Acara
+        loadTransportasiHotelAcara();
+        spinner_jenis_transport.setVisibility(View.INVISIBLE);
+        et_keterangan_hotel_acara.setVisibility(View.INVISIBLE);
+//        rg_hotel_acara.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
+//                if(i == R.id.rb_diurusPanitia_hotel_acara){
+//                    isDiurusHotelAcara = true;
+//                    Log.d(TAG, "diurus panitia hotel acara: " + isDiurusHotelAcara);
+//                    spinner_jenis_transport.setVisibility(View.VISIBLE);
+//                    spinner_jenis_transport.setText("");
+//                    et_keterangan_hotel_acara.setVisibility(View.VISIBLE);
+//                    checkWifeStatus();
+//                    setHargaTotal_v2();
+//                } if(i == R.id.rb_tidakDiurusPanitia_hotel_acara){
+//                    isDiurusHotelAcara = false;
+//                    Log.d(TAG, "diurus panitia hotel acara: " + isDiurusHotelAcara);
+//                    hargaTransportHotelAcara = 0;
+//                    spinner_jenis_transport.setVisibility(View.INVISIBLE);
+//                    et_keterangan_hotel_acara.setVisibility(View.INVISIBLE);
+//                    checkWifeStatus();
+//                    setHargaTotal_v2();
+//                }
+//            }
+//        });
+        ArrayAdapter<String> hotelAcaraAdapter = new ArrayAdapter<>(getContext(),
+                android.R.layout.simple_dropdown_item_1line, TRANSPORTASI_HOTELACARA);
+        spinner_jenis_transport.setAdapter(hotelAcaraAdapter);
+
+
+
+//      CHECK TRANSPORT 1
+        rg_bandara_hotel.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
-            public void onClick(View view) {
+            public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
+                if(i == R.id.rb_diurusPanitia_bandara_hotel){
+                    isDiurusBandaraHotel = true;
+                    spinner_jenis_transport_bandara_hotel.setVisibility(View.VISIBLE);
+                    spinner_jenis_transport_bandara_hotel.setText("");
+                    et_keterangan_bandara_hotel.setVisibility(View.VISIBLE);
+                    Log.d(TAG, "t1 true");
+                } if(i == R.id.rb_tidakDiurusPanitia_bandara_hotel){
+                    isDiurusBandaraHotel = false;
+                    spinner_jenis_transport_bandara_hotel.setVisibility(View.INVISIBLE);
+                    et_keterangan_bandara_hotel.setVisibility(View.INVISIBLE);
+                    hargaTransportBandaraHotel = 0;
+                    checkWifeStatus();
+                    setHargaTotal_v2();
+                    Log.d(TAG, "t1 false");
+                }
+            }
+        });
+
+//      CHECK TRANSPORT 2
+        rg_hotel_acara.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
+                if(i == R.id.rb_diurusPanitia_hotel_acara){
+                    isDiurusHotelAcara = true;
+                    spinner_jenis_transport.setVisibility(View.VISIBLE);
+                    spinner_jenis_transport.setText("");
+                    et_keterangan_hotel_acara.setVisibility(View.VISIBLE);
+                    Log.d(TAG, "t2 true");
+                } if(i == R.id.rb_tidakDiurusPanitia_hotel_acara){
+                    isDiurusHotelAcara = false;
+                    spinner_jenis_transport.setVisibility(View.INVISIBLE);
+                    et_keterangan_hotel_acara.setVisibility(View.INVISIBLE);
+                    hargaTransportHotelAcara = 0;
+                    checkWifeStatus();
+                    setHargaTotal_v2();
+                    Log.d(TAG, "t2 false");
+                }
+            }
+        });
+
+
+        spinner_jenis_transport_bandara_hotel.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(s.length() != 0) {
+                    hargaTransportBandaraHotel = mapTransBandaraHotel.get(spinner_jenis_transport_bandara_hotel.getText().toString());
+                    checkWifeStatus();
+                    setHargaTotal_v2();
+                }
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start,
+                                          int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start,
+                                      int before, int count) {
 
             }
         });
 
+        spinner_jenis_transport.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(s.length() != 0) {
+                    hargaTransportHotelAcara = mapTransHotelAcara.get(spinner_jenis_transport.getText().toString());
+                    hargaTransportHotelAcara = 1*hargaTransportHotelAcara;
+                    checkWifeStatus();
+                    setHargaTotal_v2();
+                }
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start,
+                                          int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start,
+                                      int before, int count) {
+
+            }
+        });
+
+
+//      CHECK HOTEL
         spinner_hotel.addTextChangedListener(new TextWatcher() {
             String selectedHotel;
             @Override
@@ -310,169 +614,18 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
             }
         });
 
-        ArrayAdapter<String> bedAdapter = new ArrayAdapter<>(getContext(),
-                android.R.layout.simple_dropdown_item_1line, KASUR);
-        spinner_bed.setAdapter(bedAdapter);
-
-        loadTipeKamar();
-
-//        Istri
-        et_nama_istri.setVisibility(View.INVISIBLE);
-        rg_istri.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
-                if (i == R.id.rb_bersama_istri){
-                    denganistri = true;
-                    if(isKonsumsi1){
-                        hargaKonsumsi = 2 * sum;
-                    } if(!isKonsumsi1){
-                        hargaKonsumsi = 0;
-                    } if(isDiurusBandaraHotel){
-                        hargaTransportBandaraHotel = 2 * hargaTBanHotel;
-                    } if(isDiurusHotelAcara){
-                        hargaTransportHotelAcara = 2 * hargaTHotAcara;
-                    } if(!isDiurusHotelAcara){
-                        hargaTransportBandaraHotel = 1 * hargaTBanHotel;
-                    } if(!isDiurusHotelAcara){
-                        hargaTransportHotelAcara = 1 * hargaTHotAcara;
-                    } if(spinner_bed.getText().toString().equals(kasur3)){
-                        sumKamar = hargaKamar + extra;
-                        Log.d("sumKamar", hargaKamar + " + " + extra);
-                    } if(!spinner_bed.getText().toString().equals(kasur3)){
-                        sumKamar = hargaKamar;
-                    }
-                    et_nama_istri.setVisibility(View.VISIBLE);
-                } if (i == R.id.rb_tidak_bersama_istri){
-                    denganistri = false;
-                    if(isKonsumsi1){
-                        hargaKonsumsi = sum;
-                    } if(!isKonsumsi1){
-                        hargaKonsumsi = 0;
-                    } if(!isDiurusBandaraHotel){
-                        hargaTransportBandaraHotel = 1 * hargaTBanHotel;
-                    } if(!isDiurusHotelAcara){
-                        hargaTransportHotelAcara = 1 * hargaTHotAcara;
-                    } if(spinner_bed.getText().toString().equals(kasur3)){
-                        sumKamar = (hargaKamar / 2) + extra;
-                    } if(!spinner_bed.getText().toString().equals(kasur3)){
-                        sumKamar = hargaKamar/2;
-                    }
-                    et_nama_istri.setVisibility(View.INVISIBLE);
-                }
-                Log.d("istri", denganistri + " konsumsi" + hargaKonsumsi
-                        + "\nbandara hotel: " + hargaTransportBandaraHotel + "\nhotel acara: "
-                        + hargaTransportHotelAcara + "\nkamar: " + sumKamar);
-                setTotalHarga();
-            }
-        });
-
-//        Transportasi Bandara - Hotel
-        loadTransportasiBandaraHotel();
-        spinner_jenis_transport_bandara_hotel.setVisibility(View.INVISIBLE);
-        et_keterangan_bandara_hotel.setVisibility(View.INVISIBLE);
-        rg_bandara_hotel.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
-                if(i == R.id.rb_diurusPanitia_bandara_hotel){
-                    isDiurusBandaraHotel = true;
-                    spinner_jenis_transport_bandara_hotel.setVisibility(View.VISIBLE);
-                    spinner_jenis_transport_bandara_hotel.setText("");
-                    et_keterangan_bandara_hotel.setVisibility(View.VISIBLE);
-                } if(i == R.id.rb_tidakDiurusPanitia_bandara_hotel){
-                    isDiurusBandaraHotel = false;
-                    hargaTransportBandaraHotel = 0;
-                    setTotalHarga();
-                    spinner_jenis_transport_bandara_hotel.setVisibility(View.INVISIBLE);
-                    et_keterangan_bandara_hotel.setVisibility(View.INVISIBLE);
-                }
-            }
-        });
-        ArrayAdapter<String> bandaraHotelAdapter = new ArrayAdapter<>(getContext(),
-                android.R.layout.simple_dropdown_item_1line, TRANSPORTASI_BANDARAHOTEL);
-        spinner_jenis_transport_bandara_hotel.setAdapter(bandaraHotelAdapter);
-
-//        Transportasi Hotel - Acara
-        loadTransportasiHotelAcara();
-        spinner_jenis_transport.setVisibility(View.INVISIBLE);
-        et_keterangan_hotel_acara.setVisibility(View.INVISIBLE);
-        rg_hotel_acara.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
-                if(i == R.id.rb_diurusPanitia_hotel_acara){
-                    isDiurusHotelAcara = true;
-                    spinner_jenis_transport.setVisibility(View.VISIBLE);
-                    spinner_jenis_transport.setText("");
-                    et_keterangan_hotel_acara.setVisibility(View.VISIBLE);
-                } if(i == R.id.rb_tidakDiurusPanitia_hotel_acara){
-                    isDiurusHotelAcara = false;
-                    hargaTransportHotelAcara = 0;
-                    setTotalHarga();
-                    spinner_jenis_transport.setVisibility(View.INVISIBLE);
-                    et_keterangan_hotel_acara.setVisibility(View.INVISIBLE);
-                }
-            }
-        });
-        ArrayAdapter<String> hotelAcaraAdapter = new ArrayAdapter<>(getContext(),
-                android.R.layout.simple_dropdown_item_1line, TRANSPORTASI_HOTELACARA);
-        spinner_jenis_transport.setAdapter(hotelAcaraAdapter);
-
-        spinner_jenis_transport_bandara_hotel.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void afterTextChanged(Editable s) {}
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start,
-                                          int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start,
-                                      int before, int count) {
-                if(s.length() != 0) {
-                    hargaTBanHotel = mapTransBandaraHotel.get(spinner_jenis_transport_bandara_hotel.getText().toString());
-                    if (denganistri) {
-                        hargaTransportBandaraHotel = 2 * hargaTBanHotel;
-                    }
-                    if (!denganistri) {
-                        hargaTransportBandaraHotel = 1 * hargaTBanHotel;
-                    }
-                    Log.d("hargaTBandaraHotel", "denganistri" + denganistri + " Rp " + String.valueOf(hargaTransportBandaraHotel));
-                    setTotalHarga();
-                }
-            }
-        });
-
-        spinner_jenis_transport.addTextChangedListener(new TextWatcher() {
-
-            @Override
-            public void afterTextChanged(Editable s) {}
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start,
-                                          int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start,
-                                      int before, int count) {
-                if(s.length() != 0) {
-                    hargaTHotAcara = mapTransHotelAcara.get(spinner_jenis_transport.getText().toString());
-                    if (denganistri) {
-                        hargaTransportHotelAcara = 2 * hargaTHotAcara;
-                    }
-                    if (!denganistri) {
-                        hargaTransportHotelAcara = 1 * hargaTHotAcara;
-                    }
-                    Log.d("hargaTHotelAcara", String.valueOf(hargaTransportHotelAcara));
-                    setTotalHarga();
-                }
-            }
-        });
-
+//      CHECK KAMAR
         spinner_tipe_kamar.addTextChangedListener(new TextWatcher() {
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+                if(s.length() != 0) {
+                    hargaKamar = mapTipeKamar.get(spinner_tipe_kamar.getText().toString());
+                    Log.d(TAG, "harga kamar: " + hargaKamar);
+                    checkWifeStatus();
+                    setHargaTotal_v2();
+                }
+            }
 
             @Override
             public void beforeTextChanged(CharSequence s, int start,
@@ -482,83 +635,50 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
             @Override
             public void onTextChanged(CharSequence s, int start,
                                       int before, int count) {
-                if(s.length() != 0) {
-                    hargaKamar = mapTipeKamar.get(spinner_tipe_kamar.getText().toString());
-                    if (role.equals("khusus") && !denganistri) {
-                        sumKamar = hargaKamar / 2;
-                    }
-                    if (role.equals("umum") || (role.equals("khusus") && denganistri)) {
-                        sumKamar = hargaKamar;
-                    }
-                    Log.d("hargaTipeKamar", String.valueOf(sumKamar));
-                    setTotalHarga();
-                }
+
             }
         });
 
-
+//      CHECK BED
         spinner_bed.addTextChangedListener(new TextWatcher() {
 
             @Override
-            public void afterTextChanged(Editable s) {}
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start,
-                                          int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start,
-                                      int before, int count) {
-                if(s.length() != 0) {
-                    String kamar = spinner_tipe_kamar.getText().toString();
+            public void afterTextChanged(Editable s) {
+                if (s.length() != 0) {
                     String bed = spinner_bed.getText().toString();
-                    if(spinner_hotel.getText().toString().equals("S-One") && bed.equals(kasur3)){
+                    if (spinner_hotel.getText().toString().equals("S-One") && bed.equals(kasur3)) {
                         extra = extraSOne;
-                    } else if(spinner_hotel.getText().toString().equals("M-Square")
-                            && bed.equals(kasur3)){
+                    } else if (spinner_hotel.getText().toString().equals("M-Square")
+                            && bed.equals(kasur3)) {
                         extra = extraMSqr;
                     } else {
                         extra = 0;
                     }
-                    Log.d("kasur", "extra: " + bed + " - " + extra + " di kamar " + kamar);
-//                    sumKamar = hargaKamar;
-                    setTotalHarga();
+                    checkWifeStatus();
+                    setHargaTotal_v2();
+                    Log.d(TAG, "bed: " + extra);
                 }
             }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start,
+                                          int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start,
+                                      int before, int count) {
+
+            }
+
         });
 
         loadKonsumsi();
 
-//        Konsumsi
-        cb_konsumsi1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView,
-                                         boolean isChecked) {
-                if (isChecked){
-                    Log.d("cb_konsumsi1", "checked");
-                    isKonsumsi1 = true;
-                    if(denganistri){
-                        hargaKonsumsi = 2 * sum;
-                    } if(!denganistri){
-                        hargaKonsumsi = sum;
-                    }
-                    Log.d("cb_konsumsi1", "checked: " + hargaKonsumsi);
-                    setTotalHarga();
-                }
-
-                else if (!isChecked) {
-                    Log.d("cb_konsumsi1", "not checked");
-                    isKonsumsi1 = false;
-                    hargaKonsumsi = 0;
-                    Log.d("cb_konsumsi1", "not checked: " + hargaKonsumsi);
-                    setTotalHarga();
-                }
-
-            }
-        });
-
+        cb_konsumsi1.setChecked(false);
+        isKonsumsi1=false;
+//        checkWifeStatus();
+        setHargaTotal_v2();
     }
 
     private void addKasur(String selectedHotel) {
@@ -570,24 +690,9 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
             KASUR.add(kasur1);
             KASUR.add(kasur2);
         }
-        Log.d ("tipe kasur", KASUR + "..." + selectedHotel);
         ArrayAdapter<String> bedAdapter = new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_dropdown_item_1line, KASUR);
         spinner_bed.setAdapter(bedAdapter);
-    }
-
-    private void validateDate(String tgl_datang, String tgl_pulang) {
-        if(tgl_datang.equals(tgl_pulang)){
-            Toast.makeText(getContext(), "Silakan isi tanggal yang benar", Toast.LENGTH_SHORT).show();
-        }
-//        Check in advance
-//        if(tgl_datang >= tgl_pulang){
-//            Toast.makeText(getContext(), "Kepulangan tidak boleh lebih dulu dari pada kedatangan"
-//                    , Toast.LENGTH_SHORT).show();
-//        } if(tgl_pulang <= tgl_datang){
-//            Toast.makeText(getContext(), "Kepulangan tidak boleh lebih dulu dari pada kedatangan"
-//                    , Toast.LENGTH_SHORT).show();
-//        }
     }
 
     private void loadKonsumsi() {
@@ -607,13 +712,11 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
                         harga = konsumsiList.getKonsumsi().get(i).getHarga();
                         sum += harga;
                     }
-                    hargaKonsumsi=sum;
                     NumberFormat format = NumberFormat.getCurrencyInstance(Locale.getDefault());
                     format.setCurrency(Currency.getInstance("IDR"));
                     String result = format.format(sum) + ",-";
                     tv_ket_harga_konsumsi.setText(result);
                     dialog.dismiss();
-                    Log.d("hargaAllKonsumsi", String.valueOf(sum));
                 } catch (Exception e){
                     Toast.makeText(getContext(), "Maaf terjadi kesalahan, silakan ulangi beberapa saat lagi",
                             Toast.LENGTH_SHORT).show();
@@ -624,8 +727,6 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
             public void onFailure(Call<KonsumsiResponse> call, Throwable t) {
                 dialog.dismiss();
                 Toast.makeText(getContext(), "Terjadi kesalahan, silakan ulangi lagi dari halaman sebelumnya", Toast.LENGTH_LONG).show();
-                Log.d("loadKonsumsi onFailure", t.getLocalizedMessage());
-                Log.d("loadKonsumsi onFailure", t.getStackTrace().toString());
             }
         });
     }
@@ -640,16 +741,15 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
     private void emptyTipeKamarList() {
         TIPEKAMAR.clear();
         spinner_tipe_kamar.setText("");
-        sumKamar = 0;
-        setTotalHarga();
+        hargaHotel = 0;
+        setHargaTotal_v2();
     }
 
     private void emptyKasurList(){
         KASUR.clear();
         spinner_bed.setText("");
-        extra = 0;
-        setTotalHarga();
-        Log.d("emptyKasurList", "list kasur is empty " + KASUR);
+        hargaExtrabed = 0;
+        setHargaTotal_v2();
     }
 
     private void checkHotel(String selectedHotel) {
@@ -661,7 +761,6 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
                 Toast.makeText(getContext(), "Tidak ada hotel yang dipilih", Toast.LENGTH_SHORT).show();
             }
         } catch (Exception e){
-            Log.d("error in checkHotel", e.getLocalizedMessage());
             Toast.makeText(getContext(), "Silakan pilih Hotel terlebih dahulu", Toast.LENGTH_SHORT).show();
         }
     }
@@ -752,7 +851,7 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
         hotelAcara = new HotelAcara();
         pesertaModel.setNama(nama);
         pesertaModel.setRole(role);
-        pesertaModel.setTotalharga(grandTotal);
+        pesertaModel.setTotalharga(hargaTotal);
         pesertaModel.setGerejaorg(gerejaorg);
         pesertaModel.setJabatan(jabatan);
         pesertaModel.setKtp(ktp);
@@ -800,9 +899,9 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
         Log.d("Register", "isDiurusBandaraHotel: " + isDiurusBandaraHotel);
         Log.d("Register", "isDiurusHotelAcara: " + isDiurusHotelAcara);
         Log.d("Register", "hotel: " + hotel);
-        Log.d("Register", "hargaKonsumsi: Rp " + hargaKonsumsi);
-        Log.d("Register", "hargaKamar: " + tipeKamar + " Rp " + hargaKamar + ",-");
-        Log.d("Register", "totalHarga: Rp " + grandTotal + ",-");
+        Log.d("Register", "hargaMakan: Rp " + hargaKonsumsi);
+        Log.d("Register", "hargaHotel: " + tipeKamar + " Rp " + hargaHotel+ ",-");
+        Log.d("Register", "totalHarga: Rp " + hargaTotal + ",-");
         RestApi restApi = RestApi.retrofit.create(RestApi.class);
         Call<PesertaModel> call = restApi.register(pesertaModel);
         call.enqueue(new Callback<PesertaModel>() {
@@ -832,6 +931,7 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
                             @Override
                             public void onClick(View v) {
                                 pd.dismiss();
+                                getActivity().onBackPressed();
                             }
                         });
 
@@ -918,7 +1018,6 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
         });
     }
 
-
     public void loadHotel(){
         dialog.setMessage("Mengambil data...");
         dialog.setCancelable(false);
@@ -937,7 +1036,6 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
                         HOTEL.add(hotelName);
                     }
                     dialog.dismiss();
-                    Log.d("hotelSize", String.valueOf(hotelSize));
                 } catch (Exception e){
                     Toast.makeText(getContext(), "Maaf terjadi kesalahan, silakan ulangi beberapa saat lagi",
                             Toast.LENGTH_SHORT).show();
@@ -948,8 +1046,6 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
             public void onFailure(Call<HotelResponse> call, Throwable t) {
                 dialog.dismiss();
                 Toast.makeText(getContext(), "Terjadi kesalahan, silakan ulangi lagi dari halaman sebelumnya", Toast.LENGTH_LONG).show();
-                Log.d("loadHotel onFailure", t.getLocalizedMessage());
-                Log.d("loadHotel onFailure", t.getStackTrace().toString());
             }
         });
     }
@@ -966,12 +1062,10 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
             public void onResponse(Call<TipeKamarResponse> call, Response<TipeKamarResponse> response) {
                 tipekamar = response.body();
                 int kamarSize = tipekamar.getTipekamar().size();
-                Log.d("hotel", hotel + " | kamarSize = " + String.valueOf(kamarSize));
                 for(int j=0; j < kamarSize ; j++){
                     String tipeKamar = tipekamar.getTipekamar().get(j).getNama();
                     float hargaKamar = tipekamar.getTipekamar().get(j).getHarga();
                     mapTipeKamar.put(tipeKamar, hargaKamar);
-                    Log.d("tipeKamar", "ke[" + j + "] = " + tipeKamar + " harga = " + hargaKamar);
                     TIPEKAMAR.add(tipeKamar);
                 }
                 loadTipeKamar();
@@ -994,9 +1088,7 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
                 || jam_datang.equals("-") || jam_pulang.equals("-")
                 || hotel.isEmpty() || tipeKamar.isEmpty() || spinner_bed.getText().toString().equals("")){
             Toast.makeText(getContext(), "Mohon isi semua data", Toast.LENGTH_SHORT).show();
-            Log.d("validateData", "show toast");
         } else{
-            Log.d("validateData", "getAllData has done");
             daftarKPPM();
         }
     }
@@ -1065,12 +1157,12 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
         hotel = spinner_hotel.getText().toString();
         tipeKamar = spinner_tipe_kamar.getText().toString();
 
-//        set harga kamar
-        if(tipeKamar.equals("")){
-            hargaKamar = 0;
-        } if(!tipeKamar.equals("")) {
-            hargaKamar = mapTipeKamar.get(tipeKamar);
-        }
+////        set harga kamar
+//        if(tipeKamar.equals("")){
+//            hargaKamar = 0;
+//        } if(!tipeKamar.equals("")) {
+//            hargaKamar = mapTipeKamar.get(tipeKamar);
+//        }
 
 //      set tipe kasur
         if(spinner_bed.getText().toString().equals(kasur1)){
@@ -1084,20 +1176,31 @@ public class RegisterFragment extends Fragment implements AdapterView.OnItemSele
             } if(hotel.equals("M-Square")){
                 extra = 100000;
             }
-            hargaKamar += extra;
         }
-
-        totalHarga = hargaTransportBandaraHotel + hargaTransportHotelAcara + hargaKamar + hargaKonsumsi;
-        Log.d("totalHarga in All", "bandara-hotel= " + hargaTransportBandaraHotel +
-            "\nhotel-acara= " + hargaTransportHotelAcara +
-            "\nharga kamar= " + hargaKamar +
-            "\nharga konsumsi= " + hargaKonsumsi +
-            "\nTOTAL HARGA= " + totalHarga);
     }
 
     private void setRole() {
         RegisterActivity activity = (RegisterActivity) getActivity();
         role = activity.prepareRole();
-        Log.d("Register", "role: "+ role);
+    }
+
+    private void countDays(String tglDatang, String tglPulang){
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        try{
+            if(tglDatang.equals("Tanggal Keberangkatan") || tglPulang.equals("Tanggal Kepulangan")){
+                Toast.makeText(getActivity(), "Silakan isi tanggal keberangkatan dan tanggal kepulangan Anda",
+                        Toast.LENGTH_SHORT).show();
+            } else {
+                Date date1 = dateFormat.parse(tglDatang);
+                Date date2 = dateFormat.parse(tglPulang);
+                long diff = date2.getTime() - date1.getTime();
+                lamaMenginap = (int) TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+                Log.d(TAG, "lama menginap: " + TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS));
+                checkWifeStatus();
+                setHargaTotal_v2();
+            }
+        } catch (ParseException pe){
+            pe.printStackTrace();
+        }
     }
 }
