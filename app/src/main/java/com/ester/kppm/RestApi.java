@@ -33,6 +33,9 @@ public interface RestApi {
 
     final static String URL = "http://kppm.cosmiclatte.id/";
 
+    @GET("exportCsv")
+    Call<PesertaModel> exportCsv();
+
     @GET("getAllHotel")
     Call<HotelResponse> getAllHotel();
 
